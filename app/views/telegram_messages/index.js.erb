@@ -1,0 +1,119 @@
+$('#ajax-modal').html('<%= escape_javascript(render partial: 'modal_window') %>');
+
+$('#ajax-modal').dialog({
+  dialogClass: 'telegram-archive-modal',
+  height: $(window).height(),
+  width: '700px',
+  modal: true,
+  position: {
+    my: "top",
+    at: "top",
+    of: window
+  },
+  resizable: false,
+  title: '<%= t 'redmine_chat_telegram.archive_title' %>',
+  open: function () {
+    setFormStyles()
+  },
+  close: function () {
+    $('#datetimepicker').datetimepicker('destroy')
+  }
+});
+
+$(".ui-widget-overlay").click(function () {
+  $("#ajax-modal").dialog("close")
+});
+
+$('#ajax-modal').dialog('open')
+
+function setFormStyles() {
+  $("#datetimepicker").blur()
+  if($( window ).width() < 900) {
+    $(this).parent().css({ top: '60px'});
+    var heightOffset = 230
+  } else {
+    var heightOffset = 75
+  }
+  var formHeight = $('#ajax-modal').css('height').match(/\d+/)[0] - heightOffset;
+  $('.archive-form').css({
+    height: formHeight
+  });
+
+  if ($("#telegram-search-input").val().length !== 0){
+     $('.archive-form').each(function() {
+     var search_value = $("#telegram-search-input").val();
+     var search_regexp = new RegExp(search_value, "g");
+     $(this).html($(this).html().replace(search_regexp,"<strong>"+search_value+"</strong>"));
+   });
+  }
+}
+
+function initInfiniteScroll() {
+  setFormStyles()
+  getNextPagePath = function() {
+    return "<%= issue_chat_messages_path %>?search=<%= params[:search] %>&begin_date=<%= @min_date %>&to_date=<%= params[:to_date] %>&page=" + (this.loadCount + 2)
+  }
+  $('.archive-form').infiniteScroll(
+    { path: getNextPagePath, append: ".telegram-messages-by-date", history: false, elementScroll: true }
+  )
+}
+
+initInfiniteScroll()
+
+function scrollTo(container, scrollElement) {
+  container.animate({
+    scrollTop: scrollElement.offset().top - container.offset().top +
+    container.scrollTop()
+  })
+}
+
+$('#datetimepicker').datepicker({
+  validateOnBlur: false,
+  format: "<%= current_date_format %> H:i",
+  onSelect: function (date) {
+    $('.archive-form').infiniteScroll('destroy')
+    $.rails.handleRemote($('<a>', { href: '<%= issue_chat_messages_path %>?to_date=' + date, 'data-method': 'GET' }))
+  }
+});
+
+$(".telegram-message").click(function () {
+  // Go to message from search
+  if ($("#telegram-search-input").prop("value") != "") {
+    clearSearch();
+    scrollTo($(".archive-form"), $(this))
+  } else {
+    checkbox = $(this).find(".telegram-message-checkbox");
+    messageId = checkbox.prop("value");
+    message = $("#telegram_message_" + messageId);
+    if ($(this).hasClass("telegram-selected-message")) {
+      message.removeClass("telegram-selected-message");
+      checkbox.prop("checked", false)
+    } else {
+      message.addClass("telegram-selected-message");
+      checkbox.prop("checked", true)
+    }
+  }
+});
+
+$(".telegram-message").hover(function () {
+  $(this).find(".telegram-message-checkbox").css("visibility", "visible");
+}, function () {
+  if (!$(this).hasClass("telegram-selected-message")) {
+    $(this).find(".telegram-message-checkbox").css("visibility", "hidden");
+  }
+});
+
+
+$("#telegram-search-input").keyup($.debounce(function (event) {
+  query = event.target.value;
+  if (query) {
+    $('.archive-form').infiniteScroll('destroy')
+    $.rails.handleRemote($('<a>', { href: '<%= issue_chat_messages_path %>?search=' + query, 'data-method': 'GET' }))
+  }
+}, 500));
+
+$(document).keypress(function(e) {
+    if (e.keyCode == 27) {
+        $('#ajax-modal').dialog('close');
+    }
+});
