@@ -3,7 +3,7 @@ require 'redmine_2chat'
 # Rails 5.1/Rails 4
 reloader = defined?(ActiveSupport::Reloader) ? ActiveSupport::Reloader : ActionDispatch::Reloader
 reloader.to_prepare do
-  paths = '/lib/redmine_2chat/{patches/*_patch,hooks/*_hook,platforms/*}.rb'
+  paths = '/lib/redmine_2chat/{patches/*_patch,hooks/*_hook,platforms/*,operations/*}.rb'
 
   Dir.glob(File.dirname(__FILE__) + paths).each do |file|
     require_dependency file
@@ -21,11 +21,12 @@ Redmine::Plugin.register :redmine_2chat do
   author 'Southbridge'
   author_url 'https://github.com/centosadmin'
 
-  # requires_redmine_plugin :redmine_telegram_common, '0.7.0'
+  # requires_redmine_plugin :redmine_bots, '0.1.0'
 
   settings(default: {
              'daily_report' => '1',
-             'kick_locked' => '1'
+             'kick_locked' => '1',
+             'active_platform' => 'telegram'
            },
            partial: 'settings/redmine_2chat')
 

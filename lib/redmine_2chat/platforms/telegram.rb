@@ -1,52 +1,36 @@
 module Redmine2chat::Platforms
   module Utils
-    include RedmineBots::Telegram::Tdlib::DependencyProviders::CreateChat
-    include RedmineBots::Telegram::Tdlib::DependencyProviders::GetChatLink
-    include TelegramCommon::Tdlib::DependencyProviders::CloseChat
-    include TelegramCommon::Tdlib::DependencyProviders::Client
+    extend RedmineBots::Telegram::Tdlib::DependencyProviders::CreateChat
+    extend RedmineBots::Telegram::Tdlib::DependencyProviders::GetChatLink
+    extend RedmineBots::Telegram::Tdlib::DependencyProviders::CloseChat
+    extend RedmineBots::Telegram::Tdlib::DependencyProviders::Client
   end
 
   class Telegram
     def initialize
     end
-
-    def create_chat(issue)
-      subject = "#{issue.project.name} #{issue.id}"
-
-      bot_id = Setting.plugin_redmine_bots_common['telegram_bot_id']
-
-      result = Utils.create_chat.(subject, [bot_id])
-
-      chat_id = result['id']
-
-      result = Utils.get_chat_link.(chat_id)
-
-      im_id = chat_id
-      telegram_chat_url = result['invite_link']
-
-      if issue.chat.present?
-        issue.chat.update im_id: im_id,
-                                    shared_url:  telegram_chat_url
-      else
-        issue.create_chat im_id: im_id,
-                                    shared_url:  telegram_chat_url
-      end
-
-      journal_text = I18n.t('redmine_2chat.journal.chat_was_created',
-                            chat_url: telegram_chat_url)
-
-      begin
-        issue.init_journal(user, journal_text)
-        issue.save
-      rescue ActiveRecord::StaleObjectError
-        issue.reload
-        retry
-      end
+    
+    def icon_path
+      '/plugin_assets/redmine_2chat/images/telegram-icon.png'
     end
 
-    def close_chat(chat, message)
-      TelegramMessageSenderWorker.new.perform(im_id, message)
-      Utils.close_chat.(chat.im_id)
+    def inactive_icon_path
+      '/plugin_assets/redmine_2chat/images/telegram-inactive-icon.png'
+    end
+
+    def create_chat(title)
+      bot_id = Setting.plugin_redmine_bots['telegram_bot_id']
+      result = Utils.create_chat.(title, [bot_id])
+      chat_id = result['id']
+      result = Utils.get_chat_link.(chat_id)
+
+      { im_id: chat_id, chat_url: result['invite_link'] }
+    end
+
+    def close_chat(im_id, message)
+      send_message(im_id, message)
+      Utils.close_chat.(im_id)
+      Utils.get_chat_link.(im_id)
     end
 
     def kick_locked_users
@@ -83,11 +67,11 @@ module Redmine2chat::Platforms
       end
     end
 
-    def send_message(chat, message)
+    def send_message(im_id, message)
       token = Setting.plugin_redmine_bots['telegram_bot_token']
-      bot   = Telegram::Bot::Client.new(token)
+      bot   = ::Telegram::Bot::Client.new(token)
 
-      bot.api.send_message(chat_id: chat.im_id,
+      bot.api.send_message(chat_id: im_id,
                            text: message,
                            disable_web_page_preview: true,
                            parse_mode: 'HTML')

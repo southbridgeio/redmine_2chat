@@ -5,7 +5,7 @@ module RedmineChatTelegram
         base.class_eval do
           unloadable
 
-          has_many :chat_messages, through: :chat
+          has_many :chat_messages, through: :chat, source: :messages
           has_one :chat, class_name: 'IssueChat'
 
           before_save :set_need_to_close, :reset_need_to_close

@@ -1,0 +1,164 @@
+en:
+  permission_create_chat: Create Chat
+  permission_close_chat: Close Chat
+  permission_view_chat_link: View Chat Link
+  permission_view_chat_archive: View Chat Archive
+  permission_manage_chat: Manage Chat
+  redmine_2chat:
+    bot:
+      authorize:
+        success: Bot is initialized
+      deauthorize:
+        success: Bit is deinitialized
+      command_canceled: Command was canceled.
+      command_not_found: Command not found.
+      private:
+        help:
+          start: Start work with bot.
+          connect: Connect account to Redmine.
+          new: Create new issue.
+          hot: Assigned to you issues updated today.
+          me:  Assigned to you issues.
+          deadline: Assigned to you issues with expired deadline.
+          dl: Alias for /deadline.
+          spent: Number of hours set today.
+          yspent: Number of hours set yesterday.
+          last: Last 5 issues with comments.
+          help: Help.
+          chat: Manage issues chats.
+          help: Help for commands
+          task: Edit issues.
+          issue: Alias for /task.
+          ih: Alias for /issue hot.
+          th: Alias for /task hot.
+      group:
+        help:
+          task: Get link to the issue.
+          link: Alias for /task.
+          url: Alias for /task.
+          log: save message to the issue
+          subject: Change issue subject.
+          start_date: Change issue start date.
+          due_date: Change issue due date.
+          estimated_hours: Change estimated hours for issue.
+          done_ratio: Change done ratio for issue.
+          project: Change issue project.
+          tracker: Change issue tracker.
+          status: Change issue status.
+          priority: Change issue priority.
+          assigned_to: Assign issue to another user.
+          subject_chat: Change issue chat name.
+          help: help
+          hint: Command without argument sends the current value.
+
+      error_editing_issue: Failed to edit the issue. Perhaps you entered the wrong data or you do not have the access.
+      warning_editing_issue: Field %{field} already has the requested value.
+      hot: Assigned to you issues with recent activity
+      me: Assigned to you issues
+      deadline: Assigned to you issues with expired deadline
+      issues_not_found: Issues not found.
+      spent: "Number of hours set today: %{hours}"
+      yspent: "Number of hours set yesterday: %{hours}"
+      without_comments: New issue
+      account_not_found: Account not found.
+      account_not_connected: Account is not connected to Redmine. Please, use /connect command.
+      connect:
+        already_connected: Your accounts already connected
+        wait_for_email: We sent email to address "%{email}". Please follow instructions from it.
+      new_issue:
+        choice_project_with_page: "Choice or input project name. Page %{page}."
+        choice_project_without_page: "Choice or input project name. All projects are shown."
+        choice_user: "Select user to assing new issue"
+        user_not_found: "There is no users for selected project. Command is canceled."
+        without_user: "Without user"
+        input_subject: "Input issue subject."
+        input_text: "Input issue text."
+        success: "Issue is created:"
+        error: "Failed to create issue."
+        projects_not_found: "There is no projects you can access."
+        create_chat_question: Create a chat?
+        yes_answer: "Yes"
+        no_answer: "No"
+        next_page: Next page »
+      edit_issue:
+        cancel_hint: "To cancel command use /cancel."
+        input_id: Input issue ID.
+        project_issues: List issues of project
+        select_param: Select parameter to change.
+        incorrect_value: Value is incorrect. Command was finished.
+        not_found: Issue with ID not found.
+        input_value: Input value.
+        select_project: Select project.
+        select_issue: Select issue.
+        select_tracker: Select tracker.
+        select_status: Select status.
+        select_user: Select user.
+        select_priority: Select priority
+        chat_name_changed: Chat name successfully changed.
+        chat_for_issue_not_exist: Issue does not have chat.
+        help: |
+          /issue issue_number - edit issue
+          /issue project_id - select issue of project
+          /issue hot - select issue from hot
+          /issue project - select allowed project
+          To print this help, input /issue without parameters.
+      creating_chat: Creating chat. Please wait.
+      access_denied: Access denied.
+      module_disabled: Telegam chat plugin for current project is disabled.
+      chat:
+        destroyed: Chat was successfully destroyed.
+        chat_not_found: Chat not found.
+        issue_not_found: Issue not found.
+        incorrect_command: Incorrect command format.
+        help: |
+          /chat info issue_number - link to chat
+          /chat create issue_number - create new chat for issue
+          /chat close issue_number - close chat for issue
+          To print this help, input /chat without parameters.
+      arguments_help:
+        connect: Email is not entered.
+      help:
+        connect: Connect account to Redmine.
+        new: Create new issue.
+        hot: Assigned to you issues updated today.
+        me:  Assigned to you issues.
+        deadline: Assigned to you issues with expired deadline.
+        spent: Number of hours set today.
+        yspent: Number of hours set yesterday.
+        last: Last 5 issues with comments.
+        help: Help.
+        chat: Manage issues chats.
+    tab_title: Chat Telegram
+    archive_title: Chat archive
+    settings:
+      daily_report: Post a comment with chat summary once a day
+      close_issue_statuses: Close chat for issues with statuses
+      close_issue_statuses_hint: By default chat will be closed for closed issues
+      required: "required for this plugin"
+      kick_locked: Kick locked users from chats (performs daily)
+    messages:
+      hello: "Hello, everybody! This is a chat for issue: %{issue_url}"
+      closed_from_issue: chat was closed from issue
+      closed_automaticaly: chat was closed automatically
+      close_notification: "The issue of this chat is closed. Chat will automatically disbanded after %{time_in_words}."
+    archive:
+      joined: joined the chat
+      invited: "invited %{system_data}"
+      left_chat: left the chat
+      kicked: kicked
+      chat_was_created: "Chat was created"
+      goto_date: Go to date
+      select_date: select date
+      search: Search
+      input_search_query: input search query
+      copy_to_issue: Copy to issue
+    journal:
+      chat_was_created: "Chat was created. Join it here: %{chat_url}"
+      chat_was_closed: Telegram Group was closed
+      from_telegram: from Telegram
+      daily_report: "For %{date} there were %{users_count} chatters: %{users}. %{messages_count} messages."
+    link:
+      enter_chat: Enter %{platform} chat
+      close_chat: Close chat
+      create_chat: Create %{platform} chat
+      archive: Chat archive
