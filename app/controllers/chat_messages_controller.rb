@@ -9,7 +9,7 @@ class ChatMessagesController < ApplicationController
 
     @chat_messages =
       if params[:search].present?
-        chat_messages = Redmine::Search::Fetcher.new(params[:search], User.current, ['chat_messages'], [@issue.project], issue_id: @issue.id, to_date: params[:to_date]).results(@pages.offset, @pages.per_page).to_a
+        Redmine::Search::Fetcher.new(params[:search], User.current, ['chat_messages'], [@issue.project], issue_id: @issue.id, to_date: params[:to_date]).results(@pages.offset, @pages.per_page).to_a
       else
         relation = @issue.chat_messages.limit(@pages.per_page).offset(@pages.offset)
         relation = relation.where("cast(#{TelegramMessage.table_name}.sent_at as date) <= ?", DateTime.parse(params[:to_date])) if params[:to_date].present?

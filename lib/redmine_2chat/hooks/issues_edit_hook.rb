@@ -1,4 +1,4 @@
-module RedmineChatTelegram
+module Redmine2chat
   module Hooks
     class IssuesEditHook < Redmine::Hook::ViewListener
       def controller_issues_edit_after_save(context = {})

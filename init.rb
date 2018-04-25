@@ -29,7 +29,7 @@ Redmine::Plugin.register :redmine_2chat do
            },
            partial: 'settings/redmine_2chat')
 
-  project_module :remdine_2chat do
+  project_module :redmine_2chat do
     permission :create_chat,       issue_chats: :create
     permission :close_chat,        issue_chats: :destroy
     permission :view_chat_link,    issue_chats: :create
