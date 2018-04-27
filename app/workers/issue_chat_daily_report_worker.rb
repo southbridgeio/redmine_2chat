@@ -5,7 +5,7 @@ class IssueChatDailyReportWorker
   TELEGRAM_GROUP_DAILY_REPORT_LOG = Logger.new(Rails.root.join('log/chat_telegram', 'telegram-group-daily-report.log'))
 
   def perform(issue_id, yesterday_string)
-    RedmineChatTelegram.set_locale
+    Redmine2chat::Platforms::Telegram.set_locale
 
     yesterday = Date.parse yesterday_string
     time_from = yesterday.beginning_of_day
@@ -15,8 +15,8 @@ class IssueChatDailyReportWorker
     chat_messages = issue.chat_messages
                              .where('sent_at >= ? and sent_at <= ?', time_from, time_to)
                              .where(is_system: false, bot_message: false)
-                             .where.not(from_id: [Setting.plugin_redmine_telegram_common['bot_id'],
-                                                  Setting.plugin_redmine_telegram_common['robot_id']])
+                             .where.not(from_id: [Setting.plugin_redmine_bots['telegram_bot_id'],
+                                                  Setting.plugin_redmine_bots['telegram_robot_id']])
 
     if chat_messages.present?
       date_string       = format_date(yesterday)
@@ -46,8 +46,8 @@ class IssueChatDailyReportWorker
       users_text    = users_count
       messages_text = messages_count
       journal_text  =
-        "_#{I18n.t 'redmine_chat_telegram.journal.from_telegram'}:_ \n\n" +
-        I18n.t('redmine_chat_telegram.journal.daily_report',
+        "_#{I18n.t 'redmine_2chat.journal.from_telegram'}:_ \n\n" +
+        I18n.t('redmine_2chat.journal.daily_report',
                date:           date_string,
                users:          joined_user_names,
                messages_count: messages_text,

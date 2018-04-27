@@ -1,4 +1,4 @@
-module RedmineChatTelegram
+module Redmine2chat
   module Hooks
     class IssuesEditHook < Redmine::Hook::ViewListener
       def controller_issues_edit_after_save(context = {})
@@ -7,7 +7,7 @@ module RedmineChatTelegram
         issue = context[:issue]
 
         if issue.telegram_group.present?
-          telegram_group = RedmineChatTelegram::TelegramGroup.find_by(issue_id: context[:issue].id)
+          telegram_group = Redmine2chat::Platforms::Telegram::TelegramGroup.find_by(issue_id: context[:issue].id)
           if telegram_group.present?
             telegram_id = telegram_group.telegram_id
             # TelegramIssueNotificationsWorker.perform_async(telegram_id, context[:journal].id)

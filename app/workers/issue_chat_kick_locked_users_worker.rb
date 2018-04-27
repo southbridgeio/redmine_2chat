@@ -1,20 +1,20 @@
 class IssueChatKickLockedUsersWorker
   include Sidekiq::Worker
-  include TelegramCommon::Tdlib::DependencyProviders::Client
+  include RedmineBots::Telegram::Tdlib::DependencyProviders::Client
 
   def initialize(logger = Logger.new(Rails.env.production? ? Rails.root.join('log/chat_telegram','telegram-kick-locked-users.log') : STDOUT))
     @logger = logger
   end
 
   def perform
-    return unless Setting.find_by_name(:plugin_redmine_chat_telegram).value['kick_locked']
+    return unless Setting.find_by_name(:plugin_redmine_2chat).value['kick_locked']
     client.on_ready(&method(:kick_locked_users))
   end
 
   private
 
   def kick_locked_users(client)
-    RedmineChatTelegram::IssueChat.all.each do |group|
+    Redmine2chat::Platforms::Telegram::IssueChat.all.each do |group|
       chat = client.broadcast_and_receive('@type' => 'getChat', 'chat_id' => group.telegram_id)
 
       group_info = client.broadcast_and_receive('@type' => 'getBasicGroupFullInfo',
@@ -24,7 +24,7 @@ class IssueChatKickLockedUsersWorker
 
       telegram_user_ids = group_info['members'].map { |m| m['user_id'] }
 
-      TelegramCommon::Account.preload(:user).where(telegram_id: telegram_user_ids).each do |account|
+      telegram_accounts.preload(:user).where(telegram_id: telegram_user_ids).each do |account|
         user = account.user
         next unless user&.locked?
         result = client.broadcast_and_receive('@type' => 'setChatMemberStatus',

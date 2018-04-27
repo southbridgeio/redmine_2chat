@@ -5,7 +5,7 @@ class IssueChatDailyReportCronWorker
                                                                     'telegram-group-daily-report-cron.log'))
 
   def perform
-    if Setting.plugin_redmine_chat_telegram['daily_report']
+    if Setting.plugin_redmine_2chat['daily_report']
       yesterday = 12.hours.ago
       time_from = yesterday.beginning_of_day
       time_to   = yesterday.end_of_day

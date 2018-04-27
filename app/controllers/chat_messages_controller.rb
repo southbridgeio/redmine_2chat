@@ -9,10 +9,10 @@ class ChatMessagesController < ApplicationController
 
     @chat_messages =
       if params[:search].present?
-        chat_messages = Redmine::Search::Fetcher.new(params[:search], User.current, ['chat_messages'], [@issue.project], issue_id: @issue.id, to_date: params[:to_date]).results(@pages.offset, @pages.per_page).to_a
+        Redmine::Search::Fetcher.new(params[:search], User.current, ['chat_messages'], [@issue.project], issue_id: @issue.id, to_date: params[:to_date]).results(@pages.offset, @pages.per_page).to_a
       else
         relation = @issue.chat_messages.limit(@pages.per_page).offset(@pages.offset)
-        relation = relation.where("cast(#{TelegramMessage.table_name}.sent_at as date) <= ?", DateTime.parse(params[:to_date])) if params[:to_date].present?
+        relation = relation.where("cast(#{ChatMessage.table_name}.sent_at as date) <= ?", DateTime.parse(params[:to_date])) if params[:to_date].present?
         relation.to_a
       end
 
@@ -37,12 +37,12 @@ class ChatMessagesController < ApplicationController
   private
 
   def colored_chat_users
-    chat_user_ids = @chat_messages.map(&:from_id).uniq
+    chat_user_ids = @chat_messages.map(&:im_id).uniq
     colored_users = []
     current_color = 1
 
     chat_user_ids.each do |user_id|
-      current_color = 1 if current_color > TelegramMessage::COLORS_NUMBER
+      current_color = 1 if current_color > ChatMessage::COLORS_NUMBER
       colored_users << { id: user_id, color_number: current_color }
       current_color += 1
     end

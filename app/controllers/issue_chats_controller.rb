@@ -1,17 +1,17 @@
-class IssueChatChatsController < ApplicationController
+class IssueChatsController < ApplicationController
+  include Redmine2chat::Operations
+
   unloadable
 
   def create
-    current_user = User.current
-
     @issue = Issue.visible.find(params[:issue_id])
 
-    if @issue.telegram_group.present? and @issue.telegram_group.shared_url.present?
+    if @issue.chat.present? and @issue.chat.shared_url.present?
       redirect_to issue_path(@issue)
       return
     end
 
-    RedmineChatTelegram::GroupChatCreator.new(@issue, current_user).run
+    CreateChat.(@issue)
 
     @project = @issue.project
 
@@ -21,12 +21,10 @@ class IssueChatChatsController < ApplicationController
   end
 
   def destroy
-    current_user = User.current
-
     @issue   = Issue.visible.find(params[:id])
     @project = @issue.project
 
-    RedmineChatTelegram::GroupChatDestroyer.new(@issue, current_user).run
+    CloseChat.(@issue)
 
     @last_journal = @issue.journals.visible.order('created_on').last
     redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
