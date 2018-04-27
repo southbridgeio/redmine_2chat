@@ -17,7 +17,7 @@ class IssueChatAutoCloseWorker
 
   def need_to_notify_issues
     issues = Issue.joins(:telegram_group)
-                  .where('redmine_chat_telegram_telegram_groups.last_notification_at <= ?', 24.hours.ago.change(min: 59, sec: 59))
+                  .where('redmine_2chat_telegram_groups.last_notification_at <= ?', 24.hours.ago.change(min: 59, sec: 59))
 
     if close_issue_status_ids.present?
       issues = issues.where(status_id: close_issue_status_ids)
@@ -41,14 +41,14 @@ class IssueChatAutoCloseWorker
     if close_issue_status_ids.present?
       Issue.joins(:telegram_group)
         .where(status_id: close_issue_status_ids)
-        .where('redmine_chat_telegram_telegram_groups.need_to_close_at <= ?', Time.now)
+        .where('redmine_2chat_telegram_groups.need_to_close_at <= ?', Time.now)
     else
       Issue.open(false).joins(:telegram_group)
-        .where('redmine_chat_telegram_telegram_groups.need_to_close_at <= ?', Time.now)
+        .where('redmine_2chat_telegram_groups.need_to_close_at <= ?', Time.now)
     end
   end
 
   def close_issue_status_ids
-    @close_issue_status_ids ||= Setting['plugin_redmine_chat_telegram']['close_issue_statuses']
+    @close_issue_status_ids ||= Setting['plugin_redmine_2chat']['close_issue_statuses']
   end
 end

@@ -1,9 +1,9 @@
-require 'redmine_2chat'
+require 'redmine2chat'
 
 # Rails 5.1/Rails 4
 reloader = defined?(ActiveSupport::Reloader) ? ActiveSupport::Reloader : ActionDispatch::Reloader
 reloader.to_prepare do
-  paths = '/lib/redmine_2chat/{patches/*_patch,hooks/*_hook,platforms/*,operations/*}.rb'
+  paths = '/lib/redmine2chat/{patches/*_patch,hooks/*_hook,operations/*}.rb'
 
   Dir.glob(File.dirname(__FILE__) + paths).each do |file|
     require_dependency file
@@ -12,6 +12,8 @@ reloader.to_prepare do
   Redmine2chat.register_platform('slack', Redmine2chat::Platforms::Slack.new)
   Redmine2chat.register_platform('telegram', Redmine2chat::Platforms::Telegram.new)
 end
+
+Rails.application.config.eager_load_paths += Dir.glob("#{Rails.application.config.root}/plugins/redmine_2chat/{lib,app/workers,app/models,app/controllers}")
 
 Redmine::Plugin.register :redmine_2chat do
   name 'Redmine 2Chat'

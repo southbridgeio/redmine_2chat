@@ -1,4 +1,4 @@
-module TelegramMessagesHelper
+module ChatMessagesHelper
   def messages_by_date
     @chat_messages.group_by { |x| x.sent_at.strftime('%d.%m.%Y') }
   end

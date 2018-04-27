@@ -3,10 +3,12 @@ class ChatMessage < ActiveRecord::Base
 
   unloadable
 
-  default_scope { joins(issue: :project).order(sent_at: :desc) }
-  scope :reverse_scope, -> { unscope(:order).order('sent_at ASC') }
+  default_scope {joins(issue: :project).order(sent_at: :desc)}
+  scope :reverse_scope, -> {unscope(:order).order('sent_at ASC')}
 
-  belongs_to :issue
+  belongs_to :issue_chat
+
+  has_one :issue, through: :issue_chat
 
   acts_as_searchable columns: %w[message first_name last_name username],
                      project_key: "#{Project.table_name}.id",
@@ -51,5 +53,13 @@ class ChatMessage < ActiveRecord::Base
 
   def user_id
     im_id
+  end
+
+  def is_system?
+    false
+  end
+
+  def system_data
+    ''
   end
 end

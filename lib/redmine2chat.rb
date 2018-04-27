@@ -1,5 +1,3 @@
-require_dependency 'redmine_2chat/platforms'
-
 module Redmine2chat
   @@mutex = Mutex.new
   @@platforms = {}

@@ -1,12 +1,12 @@
 <%= render partial: 'archive_form' %>
-<%= submit_tag t('redmine_chat_telegram.archive.copy_to_issue'),
+<%= submit_tag t('redmine_2chat.archive.copy_to_issue'),
                onclick: "$('.archive-form').submit()",
                class: 'archive-submit-button'%>
 
 <% content_for :header_tags do %>
-  <%= stylesheet_link_tag 'style', plugin: 'redmine_chat_telegram' %>
-  <%= stylesheet_link_tag 'jquery.datetimepicker', plugin: 'redmine_chat_telegram' %>
-  <%= javascript_include_tag 'jquery.datetimepicker.full.min', plugin: 'redmine_chat_telegram' %>
-  <%= javascript_include_tag 'infinite-scroll.pkgd.min', plugin: 'redmine_chat_telegram' %>
-  <%= javascript_include_tag 'jquery.debounce', plugin: 'redmine_chat_telegram' %>
+  <%= stylesheet_link_tag 'style', plugin: 'redmine_2chat' %>
+  <%= stylesheet_link_tag 'jquery.datetimepicker', plugin: 'redmine_2chat' %>
+  <%= javascript_include_tag 'jquery.datetimepicker.full.min', plugin: 'redmine_2chat' %>
+  <%= javascript_include_tag 'infinite-scroll.pkgd.min', plugin: 'redmine_2chat' %>
+  <%= javascript_include_tag 'jquery.debounce', plugin: 'redmine_2chat' %>
 <% end %>

@@ -8,6 +8,7 @@ module Redmine2chat::Platforms
 
   class Telegram
     def initialize
+      RedmineBots::Telegram.update_manager.add_handler(method(:handle_message))
     end
     
     def icon_path
@@ -46,7 +47,7 @@ module Redmine2chat::Platforms
 
             telegram_user_ids = group_info['members'].map {|m| m['user_id']}
 
-            TelegramCommon::Account.preload(:user).where(im_id: telegram_user_ids).each do |account|
+            telegram_accounts.preload(:user).where(im_id: telegram_user_ids).each do |account|
               user = account.user
               next unless user&.locked?
               result = client.broadcast_and_receive('@type' => 'setChatMemberStatus',
@@ -75,6 +76,46 @@ module Redmine2chat::Platforms
                            text: message,
                            disable_web_page_preview: true,
                            parse_mode: 'HTML')
+    end
+
+    private
+
+    def handle_message(message)
+      Redmine2chat::Telegram::Bot.new(message).call if message.is_a?(::Telegram::Bot::Types::Message)
+
+      group = IssueChat.find_by(im_id: message.chat.id, platform_name: 'telegram')
+
+      return if group.blank?
+
+      chat_message = ChatMessage.find_or_initialize_by(im_id: message.message_id, issue_chat_id: group.id)
+
+      sent_at = Time.at message.date
+      from = message.from
+      from_id = from.id
+      from_first_name = from.first_name
+      from_last_name = from.last_name
+      from_username = from.username
+      message_text =
+          if message.text
+            message.text
+          elsif message.new_chat_members
+            'joined'
+          elsif message.left_chat_member
+            'left_chat'
+          elsif message.group_chat_created
+            'chat_was_created'
+          else
+            'Unknown action'
+          end
+
+      chat_message.sent_at = sent_at
+      chat_message.im_id = from_id
+      chat_message.first_name = from_first_name
+      chat_message.last_name = from_last_name
+      chat_message.username = from_username
+      chat_message.message = message_text
+
+      chat_message.save!
     end
   end
 end

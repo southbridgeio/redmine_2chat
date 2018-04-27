@@ -5,9 +5,9 @@
     </span>
     <span>
       <% if message.system_data.present?  %>
-        <%= t "redmine_chat_telegram.archive.#{message.message}", system_data: message.system_data %>
+        <%= t "redmine_2chat.archive.#{message.message}", system_data: message.system_data %>
       <% else %>
-        <%= t "redmine_chat_telegram.archive.#{message.message}" %>
+        <%= t "redmine_2chat.archive.#{message.message}" %>
       <% end %>
     </span>
   </div>

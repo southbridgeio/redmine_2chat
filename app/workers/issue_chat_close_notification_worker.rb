@@ -4,7 +4,7 @@ class IssueChatCloseNotificationWorker
   include ApplicationHelper
 
   def perform(issue_id)
-    RedmineChatTelegram.set_locale
+    Redmine2chat::Platforms::Telegram.set_locale
 
     @issue = Issue.find_by id: issue_id
 
@@ -28,7 +28,7 @@ class IssueChatCloseNotificationWorker
 
     logger.debug "chat##{telegram_id}"
 
-    close_message_text = I18n.t('redmine_chat_telegram.messages.close_notification',
+    close_message_text = I18n.t('redmine_2chat.messages.close_notification',
                                 time_in_words: time_in_words)
 
     TelegramMessageSenderWorker.perform_async(telegram_id, close_message_text)
