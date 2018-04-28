@@ -4,7 +4,7 @@
       <% if User.current.allowed_to?(:view_chat_link, @issue.project) %>
         <%= link_to @issue.chat.shared_url, target: '_blank' do %>
           <%= image_tag @issue.chat.platform.icon_path %>
-          <%= t 'redmine_2chat.link.enter_chat', platform: Setting.plugin_redmine_2chat['active_platform'].titleize %>
+          <%= t 'redmine_2chat.link.enter_chat', platform: @issue.chat.platform_name.titleize %>
         <% end %>
       <% end %>
 
