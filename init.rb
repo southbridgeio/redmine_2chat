@@ -11,6 +11,8 @@ reloader.to_prepare do
 
   Redmine2chat.register_platform('slack', Redmine2chat::Platforms::Slack.new)
   Redmine2chat.register_platform('telegram', Redmine2chat::Platforms::Telegram.new)
+
+  RedmineBots::Slack::Bot.register_handlers Redmine2chat::Platforms::Slack::MessageHandler
 end
 
 Rails.application.config.eager_load_paths += Dir.glob("#{Rails.application.config.root}/plugins/redmine_2chat/{lib,app/workers,app/models,app/controllers}")
