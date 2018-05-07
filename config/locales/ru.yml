@@ -154,7 +154,7 @@ ru:
       copy_to_issue: Скопировать в задачу
     journal:
       chat_was_created: "По ссылке %{chat_url} создан чат."
-      chat_was_closed: Чат Telegram закрыт
+      chat_was_closed: Чат закрыт
       from_telegram: Из Telegram
       daily_report: "За %{date} в чате переписывались %{users}. Всего %{messages_count}. Всего в чате было %{users_count}."
     link:
