@@ -14,10 +14,10 @@ module Redmine2chat::Operations
             shared_url: chat_url,
             platform_name: Setting.plugin_redmine_2chat['active_platform']
         }
-        if @issue.chat.present?
-          @issue.chat.update!(attributes)
+        if @issue.active_chat.present?
+          @issue.active_chat.update!(attributes)
         else
-          @issue.create_chat!(attributes)
+          @issue.chats.create!(attributes)
         end
 
         journal_text = I18n.t('redmine_2chat.journal.chat_was_created', chat_url: chat_url)
