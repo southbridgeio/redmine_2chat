@@ -10,7 +10,7 @@ class CreateChatMessages < ActiveRecord::Migration
       t.datetime :sent_at
       t.text :message
       t.timestamp :created_on
-      t.text :system_data
+      t.string :system_data
       t.boolean :is_system, default: false, null: false
     end
     add_index :chat_messages, :im_id
