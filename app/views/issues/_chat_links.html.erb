@@ -1,10 +1,10 @@
 <% if @project.module_enabled?(:redmine_2chat) %>
   <div id="telegram-links" style="float: right;">
-    <% if @issue.chat.present? && @issue.chat.shared_url.present? %>
+    <% if @issue.active_chat.present? && @issue.active_chat.shared_url.present? %>
       <% if User.current.allowed_to?(:view_chat_link, @issue.project) %>
-        <%= link_to @issue.chat.shared_url, target: '_blank' do %>
-          <%= image_tag @issue.chat.platform.icon_path %>
-          <%= t 'redmine_2chat.link.enter_chat', platform: @issue.chat.platform_name.titleize %>
+        <%= link_to @issue.active_chat.shared_url, target: '_blank' do %>
+          <%= image_tag @issue.active_chat.platform.icon_path %>
+          <%= t 'redmine_2chat.link.enter_chat', platform: @issue.active_chat.platform_name.titleize %>
         <% end %>
       <% end %>
 

@@ -55,10 +55,6 @@ class ChatMessage < ActiveRecord::Base
     im_id
   end
 
-  def is_system?
-    false
-  end
-
   def system_data
     ''
   end

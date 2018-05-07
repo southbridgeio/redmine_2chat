@@ -8,6 +8,7 @@ class CreateIssueChats < ActiveRecord::Migration
       t.datetime :need_to_close_at
       t.datetime :last_notification_at
       t.string :platform_name
+      t.boolean :active, default: true, null: false
     end
     add_index :issue_chats, :im_id
     add_index :issue_chats, :platform_name
