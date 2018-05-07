@@ -154,7 +154,7 @@ en:
       copy_to_issue: Copy to issue
     journal:
       chat_was_created: "Chat was created. Join it here: %{chat_url}"
-      chat_was_closed: Telegram Group was closed
+      chat_was_closed: Chat was closed
       from_telegram: from Telegram
       daily_report: "For %{date} there were %{users_count} chatters: %{users}. %{messages_count} messages."
     link:
