@@ -35,7 +35,7 @@ module Redmine2chat::Telegram
           bot_token: bot_token
         }.merge(params)
 
-        ::TelegramCommon::Bot::MessageSender.call(message_params)
+        RedmineBots::Telegram::Bot::MessageSender.call(message_params)
       end
 
       def account
