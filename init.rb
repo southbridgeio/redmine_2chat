@@ -1,3 +1,9 @@
+log_dir = Rails.root.join('log/redmine_2chat')
+tmp_dir = Rails.root.join('tmp/redmine_2chat')
+
+FileUtils.mkdir_p(log_dir) unless Dir.exist?(log_dir)
+FileUtils.mkdir_p(tmp_dir) unless Dir.exist?(tmp_dir)
+
 require_dependency Rails.root.join('plugins','redmine_bots', 'init')
 require 'redmine2chat'
 
