@@ -34,40 +34,6 @@ module Redmine2chat::Platforms
       Utils.get_chat_link.(im_id)
     end
 
-    def kick_locked_users
-      Utils.client.on_ready do |client|
-        begin
-          IssueChat.all.each do |group|
-            chat = client.broadcast_and_receive('@type' => 'getChat', 'chat_id' => group.im_id)
-
-            group_info = client.broadcast_and_receive('@type' => 'getBasicGroupFullInfo',
-                                                      'basic_group_id' => chat.dig('type', 'basic_group_id')
-            )
-            #(@logger.warn("Error while fetching group ##{group.im_id}: #{group_info.inspect}") && next) if group_info['@type'] == 'error'
-
-            telegram_user_ids = group_info['members'].map {|m| m['user_id']}
-
-            telegram_accounts.preload(:user).where(im_id: telegram_user_ids).each do |account|
-              user = account.user
-              next unless user&.locked?
-              result = client.broadcast_and_receive('@type' => 'setChatMemberStatus',
-                                                    'chat_id' => group.im_id,
-                                                    'user_id' => account.im_id,
-                                                    'status' => {'@type' => 'chatMemberStatusLeft'})
-              #@logger.info("Kicked user ##{user.id} from chat ##{group.im_id}") if result['@type'] == 'ok'
-              #@logger.error("Failed to kick user ##{user.id} from chat ##{group.im_id}: #{result.inspect}") if result['@type'] == 'error'
-            end
-          end
-        rescue Timeout::Error
-          tries ||= 3
-          sleep 2
-          retry unless (tries -= 1).zero?
-        ensure
-          client.close
-        end
-      end
-    end
-
     def send_message(im_id, message)
       token = Setting.plugin_redmine_bots['telegram_bot_token']
       bot   = ::Telegram::Bot::Client.new(token)
@@ -76,6 +42,11 @@ module Redmine2chat::Platforms
                            text: message,
                            disable_web_page_preview: true,
                            parse_mode: 'HTML')
+    rescue Telegram::Bot::Exceptions::ResponseError => e
+      if e.message.include?('429') || e.message.include?('retry later')
+        sleep 5
+        retry
+      end
     end
 
     private

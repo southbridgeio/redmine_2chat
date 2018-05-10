@@ -2,8 +2,6 @@ class IssueChatDailyReportWorker
   include Sidekiq::Worker
   include Redmine::I18n
 
-  TELEGRAM_GROUP_DAILY_REPORT_LOG = Logger.new(Rails.root.join('log/chat_telegram', 'telegram-group-daily-report.log'))
-
   def perform(issue_id, yesterday_string)
     I18n.locale = Setting['default_language']
 

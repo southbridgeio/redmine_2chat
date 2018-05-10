@@ -9,13 +9,13 @@ class IssueChatCloseNotificationWorker
     @issue = Issue.find_by id: issue_id
 
     return unless issue.present?
-    return unless telegram_group.present?
+    return unless issue_chat.present?
 
-    if telegram_group.telegram_id.present?
+    if issue_chat.im_id.present?
       send_chat_notification
-      telegram_group.update last_notification_at: Time.now
+      issue_chat.update last_notification_at: Time.now
     else
-      telegram_group.destroy
+      issue_chat.destroy
     end
   end
 
@@ -24,14 +24,14 @@ class IssueChatCloseNotificationWorker
   attr_reader :issue
 
   def send_chat_notification
-    telegram_id = telegram_group.telegram_id
+    im_id = issue_chat.im_id
 
-    logger.debug "chat##{telegram_id}"
+    logger.debug "chat##{im_id}"
 
     close_message_text = I18n.t('redmine_2chat.messages.close_notification',
                                 time_in_words: time_in_words)
 
-    TelegramMessageSenderWorker.perform_async(telegram_id, close_message_text)
+    IssueChatMessageSenderWorker.perform_async(im_id, issue_chat.platform_name, close_message_text)
   end
 
   def time_in_words
@@ -71,16 +71,16 @@ class IssueChatCloseNotificationWorker
   end
 
   def hours_count
-    time_diff = (Time.current - telegram_group.need_to_close_at)
+    time_diff = (Time.current - issue_chat.need_to_close_at)
     (time_diff / 1.hour).round.abs
   end
 
   def days_count
-    telegram_group.need_to_close_at.to_date.mjd - Date.today.mjd
+    issue_chat.need_to_close_at.to_date.mjd - Date.today.mjd
   end
 
-  def telegram_group
-    @telegram_group ||= issue.active_chat
+  def issue_chat
+    @issue_chat ||= issue.active_chat
   end
 
   def logger
