@@ -1,9 +1,6 @@
 class IssueChatDailyReportCronWorker
   include Sidekiq::Worker
 
-  TELEGRAM_GROUP_DAILY_REPORT_CRON_LOG = Logger.new(Rails.root.join('log/chat_telegram',
-                                                                    'telegram-group-daily-report-cron.log'))
-
   def perform
     if Setting.plugin_redmine_2chat['daily_report']
       yesterday = 12.hours.ago

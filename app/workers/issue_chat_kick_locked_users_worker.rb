@@ -14,7 +14,7 @@ class IssueChatKickLockedUsersWorker
   private
 
   def kick_locked_users(client)
-    Redmine2chat::Platforms::Telegram::IssueChat.all.each do |group|
+    IssueChat.where(platform_name: 'telegram').all.each do |group|
       chat = client.broadcast_and_receive('@type' => 'getChat', 'chat_id' => group.telegram_id)
 
       group_info = client.broadcast_and_receive('@type' => 'getBasicGroupFullInfo',
@@ -24,14 +24,14 @@ class IssueChatKickLockedUsersWorker
 
       telegram_user_ids = group_info['members'].map { |m| m['user_id'] }
 
-      telegram_accounts.preload(:user).where(telegram_id: telegram_user_ids).each do |account|
+      TelegramAccount.preload(:user).where(telegram_id: telegram_user_ids).each do |account|
         user = account.user
         next unless user&.locked?
         result = client.broadcast_and_receive('@type' => 'setChatMemberStatus',
-                                    'chat_id' => group.telegram_id,
+                                    'chat_id' => group.im_id,
                                     'user_id' => account.telegram_id,
                                     'status' => { '@type' => 'chatMemberStatusLeft' })
-        @logger.info("Kicked user ##{user.id} from chat ##{group.telegram_id}") if result['@type'] == 'ok'
+        @logger.info("Kicked user ##{user.id} from chat ##{group.im_id}") if result['@type'] == 'ok'
         @logger.error("Failed to kick user ##{user.id} from chat ##{group.telegram_id}: #{result.inspect}") if result['@type'] == 'error'
       end
     end

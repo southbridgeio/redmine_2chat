@@ -21,6 +21,20 @@ end
 
 Rails.application.config.eager_load_paths += Dir.glob("#{Rails.application.config.root}/plugins/redmine_2chat/{lib,app/workers,app/models,app/controllers}")
 
+Sidekiq::Logging.logger = Logger.new(Rails.root.join('log', 'sidekiq.log'))
+
+Sidekiq::Cron::Job.create(name:  'Issue chats Auto Close - every 1 hour',
+                          cron:  '7 * * * *',
+                          class: 'IssueChatAutoCloseWorker')
+
+Sidekiq::Cron::Job.create(name:  'Issue chats Daily Report - every day',
+                          cron:  '7 0 * * *',
+                          class: 'IssueChatDailyReportCronWorker')
+
+Sidekiq::Cron::Job.create(name:  'Issue chats Kick locked users - every day',
+                          cron:  '7 0 * * *',
+                          class: 'IssueChatKickLockedUsersWorker')
+
 Redmine::Plugin.register :redmine_2chat do
   name 'Redmine 2Chat'
   url 'https://github.com/centosadmin/redmine_2chat'
@@ -29,7 +43,7 @@ Redmine::Plugin.register :redmine_2chat do
   author 'Southbridge'
   author_url 'https://github.com/centosadmin'
 
-  # requires_redmine_plugin :redmine_bots, '0.1.0'
+  requires_redmine_plugin :redmine_bots, '0.1.0'
 
   settings(default: {
              'daily_report' => '1',

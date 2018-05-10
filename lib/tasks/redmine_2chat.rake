@@ -49,6 +49,10 @@ namespace :redmine_2chat do
           )
         end
       end
+
+      Sidekiq::Cron::Job.destroy('Telegram Group Auto Close - every 1 hour')
+      Sidekiq::Cron::Job.destroy('Telegram Group Daily Report - every day')
+      Sidekiq::Cron::Job.destroy('Telegram Kick locked users - every day')
     end
   end
 end

@@ -10,8 +10,8 @@ class TelegramMessageSenderWorker
                     period: 1
                   }
 
-  TELEGRAM_MESSAGE_SENDER_LOG        = Logger.new(Rails.root.join('log/chat_telegram', 'telegram-message-sender.log'))
-  TELEGRAM_MESSAGE_SENDER_ERRORS_LOG = Logger.new(Rails.root.join('log/chat_telegram', 'telegram-message-sender-errors.log'))
+  TELEGRAM_MESSAGE_SENDER_LOG        = Logger.new(Rails.root.join('log/redmine_2chat', 'telegram-message-sender.log'))
+  TELEGRAM_MESSAGE_SENDER_ERRORS_LOG = Logger.new(Rails.root.join('log/redmine_2chat', 'telegram-message-sender-errors.log'))
 
   def perform(telegram_id, message)
     token = Setting.plugin_redmine_bots['telegram_bot_token']

@@ -1,6 +1,6 @@
 class IssueChatAutoCloseWorker
   include Sidekiq::Worker
-  TELEGRAM_GROUP_AUTO_CLOSE_LOG = Logger.new(Rails.root.join('log/chat_telegram', 'telegram-group-auto-close.log'))
+  TELEGRAM_GROUP_AUTO_CLOSE_LOG = Logger.new(Rails.root.join('log/redmine_2chat', 'telegram-group-auto-close.log'))
 
   def perform
     notify_chats_about_closed_issues
@@ -39,7 +39,7 @@ class IssueChatAutoCloseWorker
 
   def need_to_close_issues
     if close_issue_status_ids.present?
-      Issue.joins(:telegram_group)
+      Issue.joins(:chats)
         .where(status_id: close_issue_status_ids)
         .where('redmine_2chat_telegram_groups.need_to_close_at <= ?', Time.now)
     else

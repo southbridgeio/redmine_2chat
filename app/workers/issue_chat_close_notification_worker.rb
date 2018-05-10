@@ -4,7 +4,7 @@ class IssueChatCloseNotificationWorker
   include ApplicationHelper
 
   def perform(issue_id)
-    Redmine2chat::Platforms::Telegram.set_locale
+    I18n.locale = Setting['default_language']
 
     @issue = Issue.find_by id: issue_id
 
@@ -80,7 +80,7 @@ class IssueChatCloseNotificationWorker
   end
 
   def telegram_group
-    @telegram_group ||= issue.telegram_group
+    @telegram_group ||= issue.active_chat
   end
 
   def logger
