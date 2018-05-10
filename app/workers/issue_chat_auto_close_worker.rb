@@ -16,8 +16,8 @@ class IssueChatAutoCloseWorker
   end
 
   def need_to_notify_issues
-    issues = Issue.joins(:telegram_group)
-                  .where('redmine_2chat_telegram_groups.last_notification_at <= ?', 24.hours.ago.change(min: 59, sec: 59))
+    issues = Issue.joins(:chats)
+                  .where('issue_chats.last_notification_at <= ?', 24.hours.ago.change(min: 59, sec: 59))
 
     if close_issue_status_ids.present?
       issues = issues.where(status_id: close_issue_status_ids)
@@ -30,10 +30,10 @@ class IssueChatAutoCloseWorker
 
   def close_old_chats
     need_to_close_issues.find_each do |issue|
-      telegram_id = issue.telegram_group.telegram_id
+      im_id = issue.active_chat.im_id
 
       issue.telegram_group.destroy
-      IssueChatCloseWorker.perform_async(telegram_id)
+      IssueChatCloseWorker.perform_async(im_id, issue.active_chat.platform_name)
     end
   end
 
@@ -41,10 +41,10 @@ class IssueChatAutoCloseWorker
     if close_issue_status_ids.present?
       Issue.joins(:chats)
         .where(status_id: close_issue_status_ids)
-        .where('redmine_2chat_telegram_groups.need_to_close_at <= ?', Time.now)
+        .where('issue_chats.need_to_close_at <= ?', Time.now)
     else
       Issue.open(false).joins(:telegram_group)
-        .where('redmine_2chat_telegram_groups.need_to_close_at <= ?', Time.now)
+        .where('issue_chats.need_to_close_at <= ?', Time.now)
     end
   end
 
