@@ -1,3 +1,4 @@
+require_dependency Rails.root.join('plugins','redmine_bots', 'init')
 require 'redmine2chat'
 
 # Rails 5.1/Rails 4
