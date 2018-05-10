@@ -6,7 +6,7 @@ class IssueChatsController < ApplicationController
   def create
     @issue = Issue.visible.find(params[:issue_id])
 
-    if @issue.chat.present? and @issue.chat.shared_url.present?
+    if @issue.active_chat.present? and @issue.active_chat.shared_url.present?
       redirect_to issue_path(@issue)
       return
     end

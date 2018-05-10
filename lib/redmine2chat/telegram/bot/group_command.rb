@@ -95,7 +95,7 @@ module Redmine2chat::Telegram
       end
 
       def init_message
-        @message = ::ChatMessage.where(im_id: command.message_id, issue_chat_id: issue.chat.id).first_or_initialize(
+        @message = ::ChatMessage.where(im_id: command.message_id, issue_chat_id: issue.active_chat.id).first_or_initialize(
           sent_at: Time.at(command.date),
           im_id: command.from.id,
           first_name: command.from.first_name,
@@ -137,7 +137,7 @@ module Redmine2chat::Telegram
       end
 
       def edit_group_admin(telegram_user, is_admin = true)
-        toggle_chat_admin.(issue.chat.im_id, telegram_user.id, is_admin)
+        toggle_chat_admin.(issue.active_chat.im_id, telegram_user.id, is_admin)
       end
 
       def left_chat_member
@@ -198,9 +198,9 @@ module Redmine2chat::Telegram
 
       def change_issue_chat_name(name)
         if name.present?
-          rename_chat.(issue.chat.im_id, name)
+          rename_chat.(issue.active_chat.im_id, name)
         else
-          chat_info = get_chat.(issue.chat.im_id)
+          chat_info = get_chat.(issue.active_chat.im_id)
           send_message(chat_info['title'].to_s)
         end
       end
