@@ -9,7 +9,7 @@ class Redmine2chat::Platforms::Slack
       end
 
       def call
-        client.web_client.chat_postMessage(channel: data.channel, text: 'test', attachments: attachments)
+        client.web_client.chat_postMessage(channel: data.channel, text: I18n.t('redmine_2chat.bot.me'), attachments: attachments)
       end
 
       protected
