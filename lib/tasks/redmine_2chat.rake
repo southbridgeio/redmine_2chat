@@ -6,32 +6,30 @@ namespace :redmine_2chat do
     class TelegramMessage < ActiveRecord::Base
     end
 
-    module RedmineChatTelegram
-      class TelegramGroup < ActiveRecord::Base
-        belongs_to :issue
-      end
+    class RedmineChatTelegramTelegramGroup < ActiveRecord::Base
+      belongs_to :issue
     end
 
     Issue.send(:include,
                Module.new do
                  def self.included(klass)
                    klass.send(:has_many, :telegram_messages)
-                   klass.send(:has_one, :telegram_group, class_name: 'RedmineChatTelegram::TelegramGroup')
+                   klass.send(:has_one, :redmine_chat_telegram_telegram_group)
                  end
                end
     )
 
     Issue.transaction do
-      Issue.joins(:telegram_messages).preload(:telegram_messages, :telegram_group).distinct.each do |issue|
+      Issue.joins(:telegram_messages).preload(:telegram_messages, :redmine_chat_telegram_telegram_group).distinct.each do |issue|
         puts "Transfering telegram chat for issue ##{issue.id}..."
 
         chat = issue.chats.create!(
             platform_name: 'telegram',
-            im_id: issue.telegram_group&.telegram_id,
-            shared_url: issue.telegram_group&.shared_url,
-            need_to_close_at: issue.telegram_group&.need_to_close_at,
-            last_notification_at: issue.telegram_group&.last_notification_at,
-            active: issue.telegram_group.present?
+            im_id: issue.redmine_chat_telegram_telegram_group&.telegram_id,
+            shared_url: issue.redmine_chat_telegram_telegram_group&.shared_url,
+            need_to_close_at: issue.redmine_chat_telegram_telegram_group&.need_to_close_at,
+            last_notification_at: issue.redmine_chat_telegram_telegram_group&.last_notification_at,
+            active: issue.redmine_chat_telegram_telegram_group.present?
         )
 
         issue.telegram_messages.each do |message|
