@@ -15,12 +15,12 @@ class IssueChatKickLockedUsersWorker
 
   def kick_locked_users(client)
     IssueChat.where(platform_name: 'telegram').all.each do |group|
-      chat = client.broadcast_and_receive('@type' => 'getChat', 'chat_id' => group.telegram_id)
+      chat = client.broadcast_and_receive('@type' => 'getChat', 'chat_id' => group.im_id)
 
       group_info = client.broadcast_and_receive('@type' => 'getBasicGroupFullInfo',
                                      'basic_group_id' => chat.dig('type', 'basic_group_id')
       )
-      (@logger.warn("Error while fetching group ##{group.telegram_id}: #{group_info.inspect}") && next) if group_info['@type'] == 'error'
+      (@logger.warn("Error while fetching group ##{group.im_id}: #{group_info.inspect}") && next) if group_info['@type'] == 'error'
 
       telegram_user_ids = group_info['members'].map { |m| m['user_id'] }
 
@@ -32,7 +32,7 @@ class IssueChatKickLockedUsersWorker
                                     'user_id' => account.telegram_id,
                                     'status' => { '@type' => 'chatMemberStatusLeft' })
         @logger.info("Kicked user ##{user.id} from chat ##{group.im_id}") if result['@type'] == 'ok'
-        @logger.error("Failed to kick user ##{user.id} from chat ##{group.telegram_id}: #{result.inspect}") if result['@type'] == 'error'
+        @logger.error("Failed to kick user ##{user.id} from chat ##{group.im_id}: #{result.inspect}") if result['@type'] == 'error'
       end
     end
   rescue Timeout::Error
