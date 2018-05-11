@@ -13,7 +13,7 @@ class IssueChatDailyReportWorker
     chat_messages = issue.chat_messages
                              .where(sent_at: time_from..time_to)
                              .where(is_system: false)
-                             .where.not(from_id: [Setting.plugin_redmine_bots['telegram_bot_id'],
+                             .where.not(im_id: [Setting.plugin_redmine_bots['telegram_bot_id'],
                                                   Setting.plugin_redmine_bots['telegram_robot_id']])
 
     if chat_messages.present?
