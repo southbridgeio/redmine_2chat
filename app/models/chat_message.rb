@@ -13,7 +13,7 @@ class ChatMessage < ActiveRecord::Base
   acts_as_searchable columns: %w[message first_name last_name username],
                      project_key: "#{Project.table_name}.id",
                      scope: ->(options) do
-                       relation = where(issue_id: options.fetch(:issue_id)).order(sent_at: :desc)
+                       relation = joins(:issue_chat).where('issue_chats.issue_id' => options.fetch(:issue_id)).order(sent_at: :desc)
                        relation = relation.where("cast(#{table_name}.sent_at as date) <= ?", DateTime.parse(options[:to_date])) if options[:to_date].present?
                        relation
                      end
