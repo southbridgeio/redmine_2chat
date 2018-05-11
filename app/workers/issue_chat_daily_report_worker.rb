@@ -11,8 +11,8 @@ class IssueChatDailyReportWorker
 
     issue             = Issue.find(issue_id)
     chat_messages = issue.chat_messages
-                             .where('sent_at >= ? and sent_at <= ?', time_from, time_to)
-                             .where(is_system: false, bot_message: false)
+                             .where(sent_at: time_from..time_to)
+                             .where(is_system: false)
                              .where.not(from_id: [Setting.plugin_redmine_bots['telegram_bot_id'],
                                                   Setting.plugin_redmine_bots['telegram_robot_id']])
 
