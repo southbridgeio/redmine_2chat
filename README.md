@@ -77,6 +77,39 @@ issue - Change issues.
 * Make sure you're done with configuring Slack in [redmine_bots](https://github.com/centosadmin/redmine_bots).
 * Select Slack as active platform on plugin settings page.
 
+## Custom platform adapters
+
+You can create and register custom platform adapter by implementing simple contract:
+
+```ruby
+class ICQ # :)
+  def create_chat(title)
+    # needs to be implemented
+  end
+
+  def close_chat(im_id, message)
+    # needs to be implemented
+  end
+
+  def send_message(im_id, message)
+    # needs to be implemented
+  end
+
+  def icon_path
+    # needs to be implemented
+  end
+
+  def inactive_icon_path
+    # needs to be implemented
+  end
+end
+
+Redmine2chat.register_platform('icq', ICQ.new)
+
+````
+
+Then, you can select it in on plugin settings page.
+
 # Author of the Plugin
 
 The plugin is designed by [Southbridge](https://southbridge.io)
