@@ -75,6 +75,37 @@ issue - Change issues.
 ### Slack
 
 * Make sure you're done with configuring Slack in [redmine_bots](https://github.com/centosadmin/redmine_bots).
+* Set proper app scopes on your app Oauth and permissions page:
+
+```
+Add a bot user with the username @bot_name
+bot 		
+
+Access user’s public channels
+channels:history 	
+
+Access information about user’s public channels
+channels:read 	
+
+Modify your public channels
+channels:write 		
+
+Send messages as sbtest1
+chat:write:bot 	
+
+Send messages as user
+chat:write:user	
+
+Access content in user’s direct messages
+im:history 	
+
+Access information about user’s direct messages
+im:read 	
+
+Access information about your workspace
+team:read
+```
+
 * Select Slack as active platform on plugin settings page.
 
 ## Custom platform adapters
