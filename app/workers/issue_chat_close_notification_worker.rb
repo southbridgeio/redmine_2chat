@@ -14,8 +14,6 @@ class IssueChatCloseNotificationWorker
     if issue_chat.im_id.present?
       send_chat_notification
       issue_chat.update last_notification_at: Time.now
-    else
-      issue_chat.destroy
     end
   end
 
@@ -84,7 +82,7 @@ class IssueChatCloseNotificationWorker
   end
 
   def logger
-    @logger ||= Logger.new(Rails.root.join('log/chat_telegram',
-                                           'telegram-group-close-notification.log'))
+    @logger ||= Logger.new(Rails.root.join('log/redmine_2chat',
+                                           'group-close-notification.log'))
   end
 end

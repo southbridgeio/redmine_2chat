@@ -31,7 +31,7 @@ class IssueChatAutoCloseWorker
     need_to_close_issues.find_each do |issue|
       im_id = issue.active_chat.im_id
 
-      issue.active_chat.destroy
+      issue.active_chat.update_column(:active, false)
       IssueChatCloseWorker.perform_async(im_id, issue.active_chat.platform_name)
     end
   end
