@@ -12,8 +12,8 @@ module Redmine2chat::Patches
         before_destroy :close_chat
 
         def set_need_to_close
-          if closing? && chat.present?
-            chat.update need_to_close_at: 2.weeks.from_now,
+          if closing? && active_chat.present?
+            active_chat.update need_to_close_at: 2.weeks.from_now,
                         last_notification_at: (1.week.from_now - 12.hours)
 
           end
