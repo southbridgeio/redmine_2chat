@@ -42,7 +42,7 @@ module Redmine2chat::Platforms
                            text: message,
                            disable_web_page_preview: true,
                            parse_mode: 'HTML')
-    rescue Telegram::Bot::Exceptions::ResponseError => e
+    rescue ::Telegram::Bot::Exceptions::ResponseError => e
       if e.message.include?('429') || e.message.include?('retry later')
         sleep 5
         retry
