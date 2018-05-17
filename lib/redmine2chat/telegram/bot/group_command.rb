@@ -95,7 +95,7 @@ module Redmine2chat::Telegram
       end
 
       def init_message
-        @message = ::ChatMessage.where(im_id: command.message_id, issue_chat_id: issue.active_chat.id).first_or_initialize(
+        @message = ::ChatMessage.where(im_id: command.message_id, issue_chat_id: issue.chats.last.id).first_or_initialize(
           sent_at: Time.at(command.date),
           im_id: command.from.id,
           first_name: command.from.first_name,
