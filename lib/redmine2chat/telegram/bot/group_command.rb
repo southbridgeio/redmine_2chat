@@ -87,7 +87,7 @@ module Redmine2chat::Telegram
         chat_id = command.chat.id
 
         begin
-          Issue.joins(:chat)
+          Issue.joins(:chats)
             .find_by!(issue_chats: { im_id: chat_id, platform_name: 'telegram' })
         rescue ActiveRecord::RecordNotFound => e
           nil
