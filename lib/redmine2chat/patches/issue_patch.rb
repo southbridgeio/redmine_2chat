@@ -20,8 +20,8 @@ module Redmine2chat::Patches
         end
 
         def reset_need_to_close
-          if reopening? && chat.present?
-            chat.update need_to_close_at: nil,
+          if reopening? && active_chat.present?
+            active_chat.update need_to_close_at: nil,
                         last_notification_at: nil
           end
         end
