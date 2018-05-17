@@ -51,6 +51,11 @@ namespace :redmine_2chat do
       Sidekiq::Cron::Job.destroy('Telegram Group Auto Close - every 1 hour')
       Sidekiq::Cron::Job.destroy('Telegram Group Daily Report - every day')
       Sidekiq::Cron::Job.destroy('Telegram Kick locked users - every day')
+
+      EnabledModule.where(name: 'chat_telegram').each do |mod|
+        EnabledModule.create!(name: 'redmine_2chat', project_id: mod.project_id)
+        puts "Enabled redmine_2chat for project ##{mod.project_id}"
+      end
     end
   end
 end
