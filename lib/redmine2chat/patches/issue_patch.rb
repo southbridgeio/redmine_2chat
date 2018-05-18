@@ -9,7 +9,6 @@ module Redmine2chat::Patches
         has_one :active_chat, -> { active }, class_name: 'IssueChat'
 
         before_save :set_need_to_close, :reset_need_to_close
-        before_destroy :close_chat
 
         def set_need_to_close
           if closing? && active_chat.present?
