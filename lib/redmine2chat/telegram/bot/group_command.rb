@@ -101,9 +101,8 @@ module Redmine2chat::Telegram
           first_name: command.from.first_name,
           last_name: command.from.last_name,
           username: command.from.username,
-          #is_system: true,
-         # bot_message: true)
-          )
+          is_system: true
+        )
       end
 
       def group_chat_created
@@ -168,7 +167,6 @@ module Redmine2chat::Telegram
         return unless can_access_issue?
 
         message.message = command.text.gsub(/\/log\s|\s\/log$/, '')
-        message.bot_message = false
         message.is_system = false
 
         journal_text = message.as_text(with_time: false)
@@ -215,8 +213,7 @@ module Redmine2chat::Telegram
 
       def save_message
         message.message = command.text
-        #message.bot_message = false
-        #message.is_system = false
+        message.is_system = false
         message.save!
       end
 
