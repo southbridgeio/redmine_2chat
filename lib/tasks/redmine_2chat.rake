@@ -56,6 +56,10 @@ namespace :redmine_2chat do
         EnabledModule.create!(name: 'redmine_2chat', project_id: mod.project_id)
         puts "Enabled redmine_2chat for project ##{mod.project_id}"
       end
+
+      settings = Setting.find_or_initialize_by(name: 'plugin_redmine_2chat')
+      settings.value = settings.value.to_h.merge(YAML.load(Setting.where(name: 'plugin_redmine_chat_telegram').first[:value]).slice('daily_report', 'kick_locked', 'close_issue_statuses').merge('active_platform' => 'telegram'))
+      settings.save!
     end
   end
 end
