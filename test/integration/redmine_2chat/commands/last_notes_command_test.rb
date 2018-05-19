@@ -18,7 +18,7 @@ class Redmine2chat::Telegram::Commands::LastIssuesNotesCommandTest < ActiveSuppo
   let(:url_base) { "#{Setting.protocol}://#{Setting.host_name}" }
 
   before do
-    TelegramCommon::Account.create(telegram_id: command.from.id, user_id: user.id)
+    TelegramAccount.create(telegram_id: command.from.id, user_id: user.id)
     Issue.update_all(project_id: 1)
     Issue.where.not(id: [1, 5]).destroy_all
   end

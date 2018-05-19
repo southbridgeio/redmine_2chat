@@ -19,7 +19,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 
   describe '#execute' do
     it 'sends that account not found if there is no accout' do
-      text = I18n.t('redmine_chat_telegram.bot.account_not_found')
+      text = I18n.t('redmine_2chat.bot.account_not_found')
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
@@ -28,7 +28,8 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 
     describe 'when account is present' do
       before do
-        @account = ::TelegramCommon::Account.create(telegram_id: 998_899, user_id: user.id)
+        @account = ::TelegramAccount.create(telegram_id: 998_899, user_id: user.id)
+        Redmine2chat.active_platform.stubs(:create_chat).returns(im_id: 1, chat_url: 'http://telegram.me/chat')
       end
 
       describe 'step 1' do
@@ -41,7 +42,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
             .with(keyboard: project_list, one_time_keyboard: true, resize_keyboard: true)
             .returns(nil)
 
-          text = I18n.t('redmine_chat_telegram.bot.new_issue.choice_project_without_page')
+          text = I18n.t('redmine_2chat.bot.new_issue.choice_project_without_page')
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(text, reply_markup: nil)
@@ -52,7 +53,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 
       describe 'step 2' do
         before do
-          Redmine2chat::Telegram::ExecutingCommand.create(account: @account,
+          TelegramExecutingCommand.create(account: @account,
                                                        name: 'new',
                                                        data: {current_page: 1})
             .update(step_number: 2)
@@ -66,12 +67,12 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
           command = Telegram::Bot::Types::Message
                       .new(command_params.merge(text: Project.first.name))
 
-          users_list = [[I18n.t('redmine_chat_telegram.bot.new_issue.without_user'), 'Redmine Admin']]
+          users_list = [[I18n.t('redmine_2chat.bot.new_issue.without_user'), 'Redmine Admin']]
           Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new)
             .with(keyboard: users_list, one_time_keyboard: true, resize_keyboard: true)
             .returns(nil)
 
-          text = I18n.t('redmine_chat_telegram.bot.new_issue.choice_user')
+          text = I18n.t('redmine_2chat.bot.new_issue.choice_user')
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(text, reply_markup: nil)
@@ -80,7 +81,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
         end
 
         it 'sends message that users are not found it there is no project members' do
-          text = I18n.t('redmine_chat_telegram.bot.new_issue.user_not_found')
+          text = I18n.t('redmine_2chat.bot.new_issue.user_not_found')
           Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
@@ -92,7 +93,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 
       describe 'step 3' do
         before do
-          Redmine2chat::Telegram::ExecutingCommand.create(account: @account, name: 'new', data: {})
+          TelegramExecutingCommand.create(account: @account, name: 'new', data: {})
             .update(step_number: 3)
         end
 
@@ -100,7 +101,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
           command = Telegram::Bot::Types::Message
                       .new(command_params.merge(text: 'Redmine Admin'))
 
-          text = I18n.t('redmine_chat_telegram.bot.new_issue.input_subject')
+          text = I18n.t('redmine_2chat.bot.new_issue.input_subject')
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(text)
@@ -111,7 +112,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 
       describe 'step 4' do
         before do
-          Redmine2chat::Telegram::ExecutingCommand.create(account: @account, name: 'new', data: {})
+          TelegramExecutingCommand.create(account: @account, name: 'new', data: {})
             .update(step_number: 4)
         end
 
@@ -119,7 +120,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
           command = Telegram::Bot::Types::Message
                       .new(command_params.merge(text: 'issue subject'))
 
-          text = I18n.t('redmine_chat_telegram.bot.new_issue.input_text')
+          text = I18n.t('redmine_2chat.bot.new_issue.input_text')
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(text)
@@ -132,7 +133,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
         before do
           IssuePriority.create(is_default: true, name: 'normal')
           Project.find(1).trackers << Tracker.first
-          Redmine2chat::Telegram::ExecutingCommand.create(
+          TelegramExecutingCommand.create(
             account: @account,
             name: 'new',
             data: { project_name: 'eCookbook',
@@ -153,8 +154,8 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
             .returns(nil)
 
           text = <<HTML
-#{I18n.t('redmine_chat_telegram.bot.new_issue.success')} <a href="#{url_base}/issues/#{new_issue_id}">##{new_issue_id}</a>
-#{I18n.t('redmine_chat_telegram.bot.new_issue.create_chat_question')}
+#{I18n.t('redmine_2chat.bot.new_issue.success')} <a href="#{url_base}/issues/#{new_issue_id}">##{new_issue_id}</a>
+#{I18n.t('redmine_2chat.bot.new_issue.create_chat_question')}
 HTML
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
@@ -168,7 +169,7 @@ HTML
         before do
           IssuePriority.create(is_default: true, name: 'normal')
           Project.find(1).trackers << Tracker.first
-          Redmine2chat::Telegram::ExecutingCommand
+          TelegramExecutingCommand
             .create(account: @account, data: { issue_id: 1 }, name: 'new').update(step_number: 6)
         end
 
@@ -180,23 +181,21 @@ HTML
 
         it 'creates chat for issue is user send "yes"' do
           Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
-          Redmine2chat::Telegram::GroupChatCreator.any_instance.stubs(:run)
-          chat # GroupChatCreator creates chat, but here it's stubbed, so do it manually
 
           command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'Yes'))
 
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(
-              I18n.t('redmine_chat_telegram.bot.creating_chat'),
+              I18n.t('redmine_2chat.bot.creating_chat'),
               reply_markup: nil
             )
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(
               I18n.t(
-                'redmine_chat_telegram.journal.chat_was_created',
-                telegram_chat_url: shared_url
+                'redmine_2chat.journal.chat_was_created',
+                chat_url: shared_url
               )
             )
 

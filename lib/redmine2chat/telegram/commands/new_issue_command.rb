@@ -1,6 +1,8 @@
 module Redmine2chat::Telegram
   module Commands
     class NewIssueCommand < BaseBotCommand
+      include Redmine2chat::Operations
+      
       PROJECTS_PER_PAGE = 10
 
       def execute
@@ -95,11 +97,11 @@ module Redmine2chat::Telegram
           reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
         )
 
-        Redmine2chat::Telegram::GroupChatCreator.new(issue, account.user).run
+        CreateChat.(issue)
 
         issue.reload
         message_text = I18n.t('redmine_2chat.journal.chat_was_created',
-                              telegram_chat_url: issue.telegram_group.shared_url)
+                              chat_url: issue.active_chat.shared_url)
 
         send_message(message_text)
       end

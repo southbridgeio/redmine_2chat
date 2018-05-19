@@ -18,9 +18,9 @@ class Redmine2chat::Telegram::Commands::BotCommandTest < ActiveSupport::TestCase
     it "cancel executing command if it's exist" do
       command = Telegram::Bot::Types::Message
                 .new(command_params.merge(text: '/cancel'))
-      account = ::TelegramCommon::Account.create(telegram_id: command.from.id, user_id: user.id)
-      executing_command = Redmine2chat::Telegram::ExecutingCommand.create(name: 'new', account: account)
-      Redmine2chat::Telegram::ExecutingCommand.any_instance.expects(:cancel)
+      account = ::TelegramAccount.create(telegram_id: command.from.id, user_id: user.id)
+      executing_command = TelegramExecutingCommand.create(name: 'new', account: account)
+      TelegramExecutingCommand.any_instance.expects(:cancel)
 
       Redmine2chat::Telegram::Commands::BotCommand.new(command).execute
     end
@@ -29,9 +29,9 @@ class Redmine2chat::Telegram::Commands::BotCommandTest < ActiveSupport::TestCase
   it "runs executing command if it's present" do
     command = Telegram::Bot::Types::Message
               .new(command_params.merge(text: 'hello'))
-    account = ::TelegramCommon::Account.create(telegram_id: command.from.id, user_id: user.id)
-    executing_command = Redmine2chat::Telegram::ExecutingCommand.create(name: 'new', account: account)
-    Redmine2chat::Telegram::ExecutingCommand.any_instance.expects(:continue)
+    account = ::TelegramAccount.create(telegram_id: command.from.id, user_id: user.id)
+    executing_command = TelegramExecutingCommand.create(name: 'new', account: account)
+    TelegramExecutingCommand.any_instance.expects(:continue)
 
     Redmine2chat::Telegram::Commands::BotCommand.new(command).execute
   end

@@ -1,11 +1,11 @@
 require File.expand_path('../../../test_helper', __FILE__)
-require_relative '../../../app/workers/telegram_group_close_notification_worker.rb'
-require_relative '../../../app/workers/telegram_group_close_worker.rb'
-require_relative '../../../app/workers/telegram_group_auto_close_worker.rb'
+# require_relative '../../../app/workers/telegram_group_close_notification_worker.rb'
+# require_relative '../../../app/workers/telegram_group_close_worker.rb'
+# require_relative '../../../app/workers/telegram_group_auto_close_worker.rb'
 require 'minitest/mock'
 require 'minitest/autorun'
 
-class TelegramGroupAutoCloseWorkerTest < ActiveSupport::TestCase
+class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues
 
   before do
@@ -15,55 +15,57 @@ class TelegramGroupAutoCloseWorkerTest < ActiveSupport::TestCase
     Issue.find(1).update(status_id: @opened_status.id)
     Issue.find(2).update(status_id: @closed_status.id)
 
-    @telegram_group = Redmine2chat::Telegram::TelegramGroup.create(need_to_close_at: 1.day.ago,
+    @telegram_group = IssueChat.create(need_to_close_at: 1.day.ago,
                                                                 last_notification_at: 1.day.ago,
-                                                                telegram_id: 123,
+                                                                im_id: 123,
+                                                                platform_name: 'telegram',
                                                                 issue_id: 1)
-    @another_telegram_group = Redmine2chat::Telegram::TelegramGroup.create(need_to_close_at: 1.day.ago,
+    @another_telegram_group = IssueChat.create(need_to_close_at: 1.day.ago,
                                                                         last_notification_at: 1.day.ago,
-                                                                        telegram_id: 456,
+                                                                        im_id: 456,
+                                                                        platform_name: 'telegram',
                                                                         issue_id: 2)
   end
 
   describe 'when close_issue_statuses setting present' do
     before do
-      Setting['plugin_redmine_chat_telegram'] = { 'close_issue_statuses' => [@opened_status.id.to_s] }
+      Setting['plugin_redmine_2chat'] = { 'close_issue_statuses' => [@opened_status.id.to_s] }
     end
 
     it 'closes groups only for issues with required statuses' do
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [@telegram_group.telegram_id])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [@telegram_group.im_id, 'telegram'])
 
-      TelegramGroupCloseWorker.stub :perform_async, mock_worker do
-        TelegramGroupAutoCloseWorker.new.perform
+      IssueChatCloseWorker.stub :perform_async, mock_worker do
+        IssueChatAutoCloseWorker.new.perform
       end
 
       mock_worker.verify
     end
 
     it 'notify only for issues with required statuses' do
-      TelegramGroupCloseNotificationWorker.expects(:perform_async).with(1)
-      TelegramGroupAutoCloseWorker.new.perform
+      IssueChatCloseNotificationWorker.expects(:perform_async).with(1)
+      IssueChatAutoCloseWorker.new.perform
     end
   end
 
   describe 'when close_issue_statuses settings does not present' do
     before do
-      Setting['plugin_redmine_chat_telegram'] = { 'close_issue_statuses' => [] }
+      Setting['plugin_redmine_2chat'] = { 'close_issue_statuses' => [] }
     end
 
     it 'close groups only for issues with required statuses' do
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [@another_telegram_group.telegram_id])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [@another_telegram_group.im_id, 'telegram'])
 
-      TelegramGroupCloseWorker.stub :perform_async, mock_worker do
-        TelegramGroupAutoCloseWorker.new.perform
+      IssueChatCloseWorker.stub :perform_async, mock_worker do
+        IssueChatAutoCloseWorker.new.perform
       end
 
       mock_worker.verify
     end
 
     it 'notify only for issues with required statuses' do
-      TelegramGroupCloseNotificationWorker.expects(:perform_async).with(2)
-      TelegramGroupAutoCloseWorker.new.perform
+      IssueChatCloseNotificationWorker.expects(:perform_async).with(2)
+      IssueChatAutoCloseWorker.new.perform
     end
   end
 end

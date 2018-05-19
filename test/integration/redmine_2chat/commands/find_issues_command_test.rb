@@ -19,7 +19,7 @@ class Redmine2chat::Telegram::Commands::FindIssuesCommandTest < ActiveSupport::T
   let(:url_base) { "#{Setting.protocol}://#{Setting.host_name}" }
 
   before do
-    TelegramCommon::Account.create(telegram_id: command.from.id, user_id: user.id)
+    TelegramAccount.create(telegram_id: command.from.id, user_id: user.id)
     Member.create!(project_id: 1, principal: user, role_ids: [1])
   end
 

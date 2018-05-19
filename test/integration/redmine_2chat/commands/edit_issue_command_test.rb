@@ -14,7 +14,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
   let(:user) { User.find(2) }
   let(:project) { Project.find(2) }
-  let(:account) { TelegramCommon::Account.create(telegram_id: 998_899, user_id: user.id) }
+  let(:account) { TelegramAccount.create(telegram_id: 998_899, user_id: user.id) }
   let(:url_base) { "#{Setting.protocol}://#{Setting.host_name}" }
 
   before do
@@ -24,13 +24,13 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
   describe 'step 1' do
     before do
-      Redmine2chat::Telegram::ExecutingCommand.create(account: account, name: 'issue', data: {current_page: 1})
+      TelegramExecutingCommand.create(account: account, name: 'issue', data: {current_page: 1})
         .update(step_number: 1)
     end
 
     it 'offers to send hepl if not arguments' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue'))
-      text = I18n.t('redmine_chat_telegram.bot.edit_issue.help')
+      text = I18n.t('redmine_2chat.bot.edit_issue.help')
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
@@ -40,8 +40,8 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
     it 'offers to select editing param if issue id is present' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue 1'))
       text = [
-        I18n.t('redmine_chat_telegram.bot.edit_issue.select_param'),
-        I18n.t('redmine_chat_telegram.bot.edit_issue.cancel_hint')
+        I18n.t('redmine_2chat.bot.edit_issue.select_param'),
+        I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
@@ -52,7 +52,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
     it 'offers to select project' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue project'))
-      text = I18n.t('redmine_chat_telegram.bot.new_issue.choice_project_without_page')
+      text = I18n.t('redmine_2chat.bot.new_issue.choice_project_without_page')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
@@ -76,8 +76,8 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         .with(text)
 
       text_2 = [
-        I18n.t('redmine_chat_telegram.bot.edit_issue.input_id'),
-        I18n.t('redmine_chat_telegram.bot.edit_issue.cancel_hint')
+        I18n.t('redmine_2chat.bot.edit_issue.input_id'),
+        I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
 
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns('markup')
@@ -105,8 +105,8 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         .with(text)
 
       text_2 = [
-        I18n.t('redmine_chat_telegram.bot.edit_issue.input_id'),
-        I18n.t('redmine_chat_telegram.bot.edit_issue.cancel_hint')
+        I18n.t('redmine_2chat.bot.edit_issue.input_id'),
+        I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
 
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns('markup')
@@ -121,7 +121,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
   describe 'step 2' do
     before do
-      Redmine2chat::Telegram::ExecutingCommand.create(account: account, name: 'issue', data: {})
+      TelegramExecutingCommand.create(account: account, name: 'issue', data: {})
         .update(step_number: 2)
     end
 
@@ -139,8 +139,8 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         .with(text)
 
       text_2 = [
-        I18n.t('redmine_chat_telegram.bot.edit_issue.input_id'),
-        I18n.t('redmine_chat_telegram.bot.edit_issue.cancel_hint')
+        I18n.t('redmine_2chat.bot.edit_issue.input_id'),
+        I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
 
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns('markup')
@@ -154,7 +154,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
     it 'finish command if project not found' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue incorrect_project_name'))
-      text = I18n.t('redmine_chat_telegram.bot.edit_issue.incorrect_value')
+      text = I18n.t('redmine_2chat.bot.edit_issue.incorrect_value')
       Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
@@ -165,15 +165,15 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
   describe 'step 3' do
     before do
-      Redmine2chat::Telegram::ExecutingCommand.create(account: account, name: 'issue', data: {})
+      TelegramExecutingCommand.create(account: account, name: 'issue', data: {})
         .update(step_number: 3)
     end
 
     it 'offer to selecte editing params if issue is found' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '1'))
       text = [
-        I18n.t('redmine_chat_telegram.bot.edit_issue.select_param'),
-        I18n.t('redmine_chat_telegram.bot.edit_issue.cancel_hint')
+        I18n.t('redmine_2chat.bot.edit_issue.select_param'),
+        I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
@@ -184,7 +184,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
     it 'finish command if issue not found' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue 999'))
-      text = I18n.t('redmine_chat_telegram.bot.edit_issue.incorrect_value')
+      text = I18n.t('redmine_2chat.bot.edit_issue.incorrect_value')
       Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
@@ -195,14 +195,14 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
   describe 'step 4' do
     before do
-      Redmine2chat::Telegram::ExecutingCommand
+      TelegramExecutingCommand
         .create(account: account, name: 'issue', data: { issue_id: 1 })
         .update(step_number: 4)
     end
 
     it 'offerts to send new value for editing param' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'status'))
-      text = I18n.t('redmine_chat_telegram.bot.edit_issue.select_status')
+      text = I18n.t('redmine_2chat.bot.edit_issue.select_status')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
@@ -212,7 +212,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
     it 'finish command if params is incorrect' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'incorrect'))
-      text = I18n.t('redmine_chat_telegram.bot.edit_issue.incorrect_value')
+      text = I18n.t('redmine_2chat.bot.edit_issue.incorrect_value')
       Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
@@ -223,7 +223,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
   describe 'step 5' do
     before do
-      Redmine2chat::Telegram::ExecutingCommand
+      TelegramExecutingCommand
         .create(account: account, name: 'issue', data: { issue_id: 1, attribute_name: 'subject' })
         .update(step_number: 5)
     end
@@ -239,7 +239,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
     it 'finish command with error if value is incorrect' do
       command =  Telegram::Bot::Types::Message.new(command_params.merge(text: ''))
-      text = I18n.t('redmine_chat_telegram.bot.error_editing_issue')
+      text = I18n.t('redmine_2chat.bot.error_editing_issue')
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)

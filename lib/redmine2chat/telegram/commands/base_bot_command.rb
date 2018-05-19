@@ -29,13 +29,7 @@ module Redmine2chat::Telegram
       end
 
       def send_message(text, params = {})
-        message_params = {
-          chat_id: chat_id,
-          message: text,
-          bot_token: bot_token
-        }.merge(params)
-
-        RedmineBots::Telegram::Bot::MessageSender.call(message_params)
+        Redmine2chat::Platforms::Telegram.new.send_message(chat_id, text)
       end
 
       def account
