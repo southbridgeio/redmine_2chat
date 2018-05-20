@@ -38,11 +38,11 @@ class IssueChatAutoCloseWorker
 
   def need_to_close_issues
     if close_issue_status_ids.present?
-      Issue.joins(:chats)
+      Issue.joins(:active_chat)
         .where(status_id: close_issue_status_ids)
         .where('issue_chats.need_to_close_at <= ?', Time.now)
     else
-      Issue.open(false).joins(:chats)
+      Issue.open(false).joins(:active_chat)
         .where('issue_chats.need_to_close_at <= ?', Time.now)
     end
   end
