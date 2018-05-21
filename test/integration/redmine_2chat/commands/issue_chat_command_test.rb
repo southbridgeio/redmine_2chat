@@ -1,4 +1,5 @@
 require File.expand_path('../../../../test_helper', __FILE__)
+require File.expand_path('../../../../../app/workers/issue_chat_message_sender_worker', __FILE__)
 
 class Redmine2chat::Telegram::Commands::IssueChatCommandTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues, :users, :issue_statuses, :journals, :email_addresses, :enabled_modules
@@ -51,9 +52,9 @@ class Redmine2chat::Telegram::Commands::IssueChatCommandTest < ActiveSupport::Te
 
     it "sends 'access denied' message if user hasn't required rights" do
       text = 'Access denied.'
-      Redmine2chat::Platforms::Telegram.any_instance
-        .expects(:send_message)
-        .with(123, text)
+      Redmine2chat::Telegram::Commands::IssueChatCommand.any_instance
+          .expects(:send_message)
+          .with(text)
       User.any_instance.stubs(:allowed_to?).returns(false)
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/chat info 1'))
       Redmine2chat::Telegram::Commands::IssueChatCommand.new(command).execute

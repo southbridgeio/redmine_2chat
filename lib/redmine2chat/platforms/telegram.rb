@@ -10,7 +10,7 @@ module Redmine2chat::Platforms
     def initialize
       RedmineBots::Telegram.update_manager.add_handler(method(:handle_message))
     end
-    
+
     def icon_path
       '/plugin_assets/redmine_2chat/images/telegram-icon.png'
     end
@@ -35,19 +35,13 @@ module Redmine2chat::Platforms
     end
 
     def send_message(im_id, message)
-      tries ||= 3
-      token = Setting.plugin_redmine_bots['telegram_bot_token']
-      bot   = ::Telegram::Bot::Client.new(token)
+      message_params = {
+          chat_id: im_id,
+          message: message,
+          bot_token: RedmineBots::Telegram.bot_token
+      }
 
-      bot.api.send_message(chat_id: im_id,
-                           text: message,
-                           disable_web_page_preview: true,
-                           parse_mode: 'HTML')
-    rescue ::Telegram::Bot::Exceptions::ResponseError => e
-      if e.message.include?('429') || e.message.include?('retry later')
-        sleep 5
-        retry unless (tries -= 1).zero?
-      end
+      RedmineBots::Telegram::Bot::MessageSender.call(message_params)
     end
 
     private

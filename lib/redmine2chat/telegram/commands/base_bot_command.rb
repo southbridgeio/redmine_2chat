@@ -29,7 +29,7 @@ module Redmine2chat::Telegram
       end
 
       def send_message(text, params = {})
-        Redmine2chat::Platforms::Telegram.new.send_message(chat_id, text)
+        IssueChatMessageSenderWorker.perform_async(chat_id, 'telegram', text)
       end
 
       def account
