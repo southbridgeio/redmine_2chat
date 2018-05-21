@@ -54,8 +54,4 @@ class ChatMessage < ActiveRecord::Base
   def user_id
     im_id
   end
-
-  def system_data
-    ''
-  end
 end
