@@ -52,9 +52,9 @@ class Redmine2chat::Telegram::Commands::IssueChatCommandTest < ActiveSupport::Te
 
     it "sends 'access denied' message if user hasn't required rights" do
       text = 'Access denied.'
-      IssueChatMessageSenderWorker.any_instance
-        .expects(:perform_async)
-        .with(123, 'telegram', text)
+      Redmine2chat::Telegram::Commands::IssueChatCommand.any_instance
+          .expects(:send_message)
+          .with(text)
       User.any_instance.stubs(:allowed_to?).returns(false)
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/chat info 1'))
       Redmine2chat::Telegram::Commands::IssueChatCommand.new(command).execute
