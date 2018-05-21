@@ -6,7 +6,7 @@ module Redmine2chat::Telegram
     attr_reader :logger, :command, :issue
 
     def initialize(command)
-      @logger = Logger.new(Rails.root.join('log/chat_telegram', 'bot.log'))
+      @logger = Logger.new(Rails.root.join('log/redmine_2chat', 'bot.log'))
       @command = initialize_command(command)
     end
 

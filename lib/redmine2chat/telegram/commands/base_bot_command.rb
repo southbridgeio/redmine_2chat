@@ -3,7 +3,7 @@ module Redmine2chat::Telegram
     class BaseBotCommand
       attr_reader :command, :logger
 
-      LOGGER = Logger.new(Rails.root.join('log/chat_telegram', 'bot-command-base.log'))
+      LOGGER = Logger.new(Rails.root.join('log/redmine_2chat', 'bot-command-base.log'))
 
       def initialize(command, logger = LOGGER)
         @command = command

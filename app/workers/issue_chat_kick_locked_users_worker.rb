@@ -2,7 +2,7 @@ class IssueChatKickLockedUsersWorker
   include Sidekiq::Worker
   include RedmineBots::Telegram::Tdlib::DependencyProviders::Client
 
-  def initialize(logger = Logger.new(Rails.env.production? ? Rails.root.join('log/chat_telegram','telegram-kick-locked-users.log') : STDOUT))
+  def initialize(logger = Logger.new(Rails.env.production? ? Rails.root.join('log/redmine_2chat','telegram-kick-locked-users.log') : STDOUT))
     @logger = logger
   end
 
