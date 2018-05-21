@@ -1,4 +1,5 @@
 require File.expand_path('../../../../test_helper', __FILE__)
+require File.expand_path('../../../../../app/workers/issue_chat_message_sender_worker', __FILE__)
 
 class Redmine2chat::Telegram::Commands::IssueChatCommandTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues, :users, :issue_statuses, :journals, :email_addresses, :enabled_modules
