@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/centosadmin/redmine_2chat.svg?branch=master)](https://travis-ci.org/centosadmin/redmine_2chat)
+
 # redmine_2chat
 
 This plugin is used to create group chats in instant messengers.
