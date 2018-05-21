@@ -35,6 +35,7 @@ module Redmine2chat::Platforms
     end
 
     def send_message(im_id, message)
+      tries ||= 3
       token = Setting.plugin_redmine_bots['telegram_bot_token']
       bot   = ::Telegram::Bot::Client.new(token)
 
@@ -45,7 +46,7 @@ module Redmine2chat::Platforms
     rescue ::Telegram::Bot::Exceptions::ResponseError => e
       if e.message.include?('429') || e.message.include?('retry later')
         sleep 5
-        retry
+        retry unless (tries -= 1).zero?
       end
     end
 
