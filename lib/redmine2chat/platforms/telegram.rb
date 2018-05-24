@@ -37,7 +37,7 @@ module Redmine2chat::Platforms
     def send_message(im_id, message)
       message_params = {
           chat_id: im_id,
-          message: message,
+          message: Nokogiri::HTML::DocumentFragment.parse(message).to_html,
           bot_token: RedmineBots::Telegram.bot_token
       }
 
