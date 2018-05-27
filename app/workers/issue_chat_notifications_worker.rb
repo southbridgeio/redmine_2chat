@@ -17,7 +17,7 @@ class IssueChatNotificationsWorker
 
     message << "\n#{details_to_strings(journal.visible_details, true).join("\n")}" if journal.details.present?
 
-    message << "\n<pre>#{journal.notes}</pre>" if journal.notes.present?
+    message << "\n<pre>#{ActionView::Base.full_sanitizer.sanitize(journal.notes)}</pre>" if journal.notes.present?
 
     ISSUE_NOTIFICATIONS_LOG.info "MESSAGE: #{message}"
 
