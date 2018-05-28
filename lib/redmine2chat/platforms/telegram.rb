@@ -34,12 +34,12 @@ module Redmine2chat::Platforms
       Utils.get_chat_link.(im_id)
     end
 
-    def send_message(im_id, message)
+    def send_message(im_id, message, params = {})
       message_params = {
           chat_id: im_id,
-          message: Nokogiri::HTML::DocumentFragment.parse(message).to_html,
+          message: message,
           bot_token: RedmineBots::Telegram.bot_token
-      }
+      }.merge(params)
 
       RedmineBots::Telegram::Bot::MessageSender.call(message_params)
     end

@@ -233,7 +233,7 @@ module Redmine2chat::Telegram
         Telegram::Bot::Types::ReplyKeyboardMarkup.new(
           keyboard: items_with_cancel.each_slice(2).to_a,
           one_time_keyboard: true,
-          resize_keyboard: true)
+          resize_keyboard: true).to_json
       end
 
       def issue
