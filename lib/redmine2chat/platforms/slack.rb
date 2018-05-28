@@ -15,7 +15,7 @@ module Redmine2chat::Platforms
       robot_client.channels_archive(channel: im_id)
     end
 
-    def send_message(im_id, message)
+    def send_message(im_id, message, **)
       robot_client.chat_postMessage(channel: im_id, text: message)
     end
 

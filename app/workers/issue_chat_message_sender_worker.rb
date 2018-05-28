@@ -7,7 +7,7 @@ class IssueChatMessageSenderWorker
                     period: 1
                   }
 
-  def perform(im_id, platform_name, message)
-    Redmine2chat.platforms[platform_name].send_message(im_id, message)
+  def perform(im_id, platform_name, message, params = {})
+    Redmine2chat.platforms[platform_name].send_message(im_id, message, params)
   end
 end
