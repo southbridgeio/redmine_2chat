@@ -43,20 +43,20 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.select_param'),
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: '{}')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
 
     it 'offers to select project' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue project'))
       text = I18n.t('redmine_2chat.bot.new_issue.choice_project_without_page')
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: '{}')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
 
@@ -80,11 +80,11 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
 
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns('markup')
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
 
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text_2, reply_markup: 'markup')
+        .with(text_2, reply_markup: '{}')
 
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
@@ -109,11 +109,11 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
 
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns('markup')
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
 
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text_2, reply_markup: 'markup')
+        .with(text_2, reply_markup: '{}')
 
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
@@ -143,11 +143,11 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
 
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns('markup')
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
 
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text_2, reply_markup: 'markup')
+        .with(text_2, reply_markup: '{}')
 
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
@@ -175,10 +175,10 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.select_param'),
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: '{}')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
 
@@ -203,10 +203,10 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
     it 'offerts to send new value for editing param' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'status'))
       text = I18n.t('redmine_2chat.bot.edit_issue.select_status')
-      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns(nil)
+      Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: '{}')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
 
