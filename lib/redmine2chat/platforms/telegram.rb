@@ -7,10 +7,6 @@ module Redmine2chat::Platforms
   end
 
   class Telegram
-    def initialize
-      RedmineBots::Telegram.update_manager.add_handler(method(:handle_message))
-    end
-
     def icon_path
       '/plugin_assets/redmine_2chat/images/telegram-icon.png'
     end
@@ -42,12 +38,6 @@ module Redmine2chat::Platforms
       }.merge(params)
 
       RedmineBots::Telegram::Bot::MessageSender.call(message_params)
-    end
-
-    private
-
-    def handle_message(message)
-      Redmine2chat::Telegram::Bot.new(message).call if message.is_a?(::Telegram::Bot::Types::Message)
     end
   end
 end
