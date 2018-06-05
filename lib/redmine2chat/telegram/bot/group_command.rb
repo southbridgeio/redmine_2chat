@@ -132,7 +132,7 @@ module Redmine2chat::Telegram
 
       def can_manage_chat?(telegram_user)
         telegram_account = TelegramAccount.find_by(telegram_id: telegram_user.id)
-        telegram_account && telegram_account.user && telegram_account.user.allowed_to?(:manage_telegram_chat, issue.project)
+        telegram_account && telegram_account.user && telegram_account.user.allowed_to?(:manage_chat, issue.project)
       end
 
       def edit_group_admin(telegram_user, is_admin = true)
