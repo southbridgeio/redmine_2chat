@@ -9,17 +9,7 @@ module Redmine2chat::Telegram
 
       PER_PAGE = 10
 
-      EDITABLES = [
-        'project',
-        'tracker',
-        'subject',
-        'status',
-        'priority',
-        'assigned_to',
-        'start_date',
-        'due_date',
-        'estimated_hours',
-        'done_ratio']
+      EDITABLES = %w(project tracker subject status priority assigned_to start_date due_date estimated_hours done_ratio notes)
 
       def execute
         return unless account.present?
