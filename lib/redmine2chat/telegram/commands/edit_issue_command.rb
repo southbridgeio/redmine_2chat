@@ -99,6 +99,8 @@ module Redmine2chat::Telegram
         if journal.present?
           if journal.details.any?
             send_message(details_to_strings(journal.details).join("\n"))
+          elsif attr == 'notes'
+            send_message(I18n.t('redmine_2chat.bot.notes_saved'))
           else
             send_message(I18n.t('redmine_2chat.bot.warning_editing_issue', field: attr))
           end
