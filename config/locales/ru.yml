@@ -140,7 +140,7 @@ ru:
     messages:
       hello: "Всем привет! Это чат для задачи: %{issue_url}"
       closed_from_issue: Чат закрыт из задачи.
-      closed_automaticaly:  Чат закрыт автоматически.
+      closed_automatically:  Чат закрыт автоматически.
       close_notification: "Задача по этому чату закрыта. Чат будет автоматически расформирован через %{time_in_words}."
     archive:
       joined: присоединился к чату

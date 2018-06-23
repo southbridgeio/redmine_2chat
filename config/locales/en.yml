@@ -140,7 +140,7 @@ en:
     messages:
       hello: "Hello, everybody! This is a chat for issue: %{issue_url}"
       closed_from_issue: chat was closed from issue
-      closed_automaticaly: chat was closed automatically
+      closed_automatically: chat was closed automatically
       close_notification: "The issue of this chat is closed. Chat will automatically disbanded after %{time_in_words}."
     archive:
       joined: joined the chat
