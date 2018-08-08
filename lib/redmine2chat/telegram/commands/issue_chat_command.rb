@@ -19,7 +19,7 @@ module Redmine2chat::Telegram
       end
 
       def create_issue_chat
-        if account.user.allowed_to?(:create_telegram_chat, issue.project)
+        if account.user.allowed_to?(:create_chat, issue.project)
           return unless plugin_module_enabled?
 
           creating_chat_message = I18n.t('redmine_2chat.bot.creating_chat')
@@ -37,7 +37,7 @@ module Redmine2chat::Telegram
       end
 
       def close_issue_chat
-        if account.user.allowed_to?(:close_telegram_chat, issue.project)
+        if account.user.allowed_to?(:close_chat, issue.project)
           CloseChat.(issue)
           message_text = I18n.t('redmine_2chat.bot.chat.destroyed')
           send_message(message_text)

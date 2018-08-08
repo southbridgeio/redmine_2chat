@@ -24,6 +24,8 @@ reloader.to_prepare do
   RedmineBots::Slack::Bot.register_commands Redmine2chat::Platforms::Slack::Commands::Me,
                                             Redmine2chat::Platforms::Slack::Commands::Spent,
                                             Redmine2chat::Platforms::Slack::Commands::Yspent
+
+  RedmineBots::Telegram.update_manager.add_handler(->(message) { Redmine2chat::Telegram::Bot.new(message).call if message.is_a?(::Telegram::Bot::Types::Message) })
 end
 
 Rails.application.config.eager_load_paths += Dir.glob("#{Rails.application.config.root}/plugins/redmine_2chat/{lib,app/workers,app/models,app/controllers}")

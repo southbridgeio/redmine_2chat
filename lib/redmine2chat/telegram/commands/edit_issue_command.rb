@@ -9,17 +9,7 @@ module Redmine2chat::Telegram
 
       PER_PAGE = 10
 
-      EDITABLES = [
-        'project',
-        'tracker',
-        'subject',
-        'status',
-        'priority',
-        'assigned_to',
-        'start_date',
-        'due_date',
-        'estimated_hours',
-        'done_ratio']
+      EDITABLES = %w(project tracker subject status priority assigned_to start_date due_date estimated_hours done_ratio notes)
 
       def execute
         return unless account.present?
@@ -109,6 +99,8 @@ module Redmine2chat::Telegram
         if journal.present?
           if journal.details.any?
             send_message(details_to_strings(journal.details).join("\n"))
+          elsif attr == 'notes'
+            send_message(I18n.t('redmine_2chat.bot.notes_saved'))
           else
             send_message(I18n.t('redmine_2chat.bot.warning_editing_issue', field: attr))
           end
@@ -233,7 +225,7 @@ module Redmine2chat::Telegram
         Telegram::Bot::Types::ReplyKeyboardMarkup.new(
           keyboard: items_with_cancel.each_slice(2).to_a,
           one_time_keyboard: true,
-          resize_keyboard: true)
+          resize_keyboard: true).to_json
       end
 
       def issue
