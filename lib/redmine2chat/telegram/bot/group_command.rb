@@ -136,6 +136,7 @@ module Redmine2chat::Telegram
       end
 
       def edit_group_admin(telegram_user, is_admin = true)
+        return unless issue.active_chat
         toggle_chat_admin.(issue.active_chat.im_id, telegram_user.id, is_admin)
       end
 
