@@ -5,13 +5,14 @@ class IssueChatsController < ApplicationController
 
   def create
     @issue = Issue.visible.find(params[:issue_id])
+    @issue.with_lock do
+      if @issue.active_chat.present? && @issue.active_chat.shared_url.present?
+        redirect_to issue_path(@issue)
+        return
+      end
 
-    if @issue.active_chat.present? and @issue.active_chat.shared_url.present?
-      redirect_to issue_path(@issue)
-      return
+      CreateChat.(@issue)
     end
-
-    CreateChat.(@issue)
 
     @project = @issue.project
 
