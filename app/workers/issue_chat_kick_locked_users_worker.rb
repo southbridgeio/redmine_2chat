@@ -14,7 +14,7 @@ class IssueChatKickLockedUsersWorker
   private
 
   def kick_locked_users(client)
-    IssueChat.where(platform_name: 'telegram').all.each do |group|
+    IssueChat.where(platform_name: 'telegram').where.not(im_id: nil).each do |group|
       chat = client.broadcast_and_receive('@type' => 'getChat', 'chat_id' => group.im_id)
 
       group_info = client.broadcast_and_receive('@type' => 'getBasicGroupFullInfo',
