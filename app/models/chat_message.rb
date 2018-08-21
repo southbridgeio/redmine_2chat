@@ -1,7 +1,7 @@
 class ChatMessage < ActiveRecord::Base
   include Redmine::I18n
 
-  unloadable
+  
 
   default_scope {joins(issue: :project).order(sent_at: :desc)}
   scope :reverse_scope, -> {unscope(:order).order('sent_at ASC')}

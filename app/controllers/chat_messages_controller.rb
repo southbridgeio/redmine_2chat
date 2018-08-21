@@ -1,5 +1,5 @@
 class ChatMessagesController < ApplicationController
-  unloadable
+  
 
   def index
     @issue = Issue.visible.find(params[:id])

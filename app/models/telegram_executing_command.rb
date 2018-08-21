@@ -1,5 +1,5 @@
 class TelegramExecutingCommand < ActiveRecord::Base
-  unloadable
+  
 
   serialize :data
 

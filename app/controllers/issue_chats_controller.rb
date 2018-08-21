@@ -1,7 +1,7 @@
 class IssueChatsController < ApplicationController
   include Redmine2chat::Operations
 
-  unloadable
+  
 
   def create
     @issue = Issue.visible.find(params[:issue_id])
