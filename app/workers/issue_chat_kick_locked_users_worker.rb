@@ -20,6 +20,8 @@ class IssueChatKickLockedUsersWorker
       group_info = client.broadcast_and_receive('@type' => 'getBasicGroupFullInfo',
                                      'basic_group_id' => chat.dig('type', 'basic_group_id')
       )
+      next unless group_info.present?
+
       (@logger.warn("Error while fetching group ##{group.im_id}: #{group_info.inspect}") && next) if group_info['@type'] == 'error'
 
       telegram_user_ids = group_info['members'].map { |m| m['user_id'] }
