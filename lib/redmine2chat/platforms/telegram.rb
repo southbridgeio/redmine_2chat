@@ -21,7 +21,7 @@ module Redmine2chat::Platforms
       chat_id = result['id']
       result = Utils.get_chat_link.(chat_id)
 
-      { im_id: chat_id, chat_url: result['invite_link'] }
+      { im_id: chat_id, chat_url: convert_link(result['invite_link']) }
     end
 
     def close_chat(im_id, message)
@@ -38,6 +38,13 @@ module Redmine2chat::Platforms
       }.merge(params)
 
       RedmineBots::Telegram::Bot::MessageSender.call(message_params)
+    end
+
+    private
+
+    def convert_link(link)
+      invite_id = Addressable::URI.parse(link).request_uri.split('/').last
+      "tg://join?invite=#{invite_id}"
     end
   end
 end
