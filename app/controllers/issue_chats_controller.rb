@@ -1,8 +1,6 @@
 class IssueChatsController < ApplicationController
   include Redmine2chat::Operations
 
-  
-
   def create
     @issue = Issue.visible.find(params[:issue_id])
     @issue.with_lock do
@@ -29,5 +27,9 @@ class IssueChatsController < ApplicationController
 
     @last_journal = @issue.journals.visible.order('created_on').last
     redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
+  end
+
+  def tg_join
+    redirect_to "tg://join?invite=#{params[:invite_id]}"
   end
 end

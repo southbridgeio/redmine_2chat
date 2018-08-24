@@ -44,7 +44,7 @@ module Redmine2chat::Platforms
 
     def convert_link(link)
       invite_id = Addressable::URI.parse(link).request_uri.split('/').last
-      "tg://join?invite=#{invite_id}"
+      "#{Setting.protocol}://#{Setting.host_name}/tg/#{invite_id}"
     end
   end
 end
