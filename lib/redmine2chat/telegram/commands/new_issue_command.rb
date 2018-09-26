@@ -35,12 +35,12 @@ module Redmine2chat::Telegram
           executing_command.update(step_number: 3,
                                    data: executing_command.data.merge(project_name: project_name))
           send_message(I18n.t('redmine_2chat.bot.new_issue.choice_user'),
-                       reply_markup: assignable_list_markup(assignables))
+                       reply_markup: assignable_list_markup(assignables).to_json)
         else
           executing_command.destroy
           send_message(
             I18n.t('redmine_2chat.bot.new_issue.user_not_found'),
-            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true))
+            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json)
         end
       end
 
@@ -74,7 +74,7 @@ module Redmine2chat::Telegram
           resize_keyboard: true)
 
         send_message(message_text,
-                     reply_markup: keyboard)
+                     reply_markup: keyboard.to_json)
       rescue StandardError
         send_message(I18n.t('redmine_2chat.bot.new_issue.error'))
       end
@@ -94,7 +94,7 @@ module Redmine2chat::Telegram
 
         send_message(
           I18n.t('redmine_2chat.bot.creating_chat'),
-          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json
         )
 
         CreateChat.(issue)
@@ -137,7 +137,7 @@ module Redmine2chat::Telegram
             message = I18n.t('redmine_2chat.bot.new_issue.choice_project_with_page',
                              page: current_page)
           end
-          send_message(message, reply_markup: projects_list_markup(projects))
+          send_message(message, reply_markup: projects_list_markup(projects).to_json)
           executing_command.update(data: executing_command.data.merge(current_page: next_page))
         else
           send_message(I18n.t('redmine_2chat.bot.new_issue.projects_not_found'))
