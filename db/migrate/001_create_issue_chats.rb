@@ -1,4 +1,4 @@
-class CreateIssueChats < ActiveRecord::Migration
+class CreateIssueChats < Rails.version < '5.0' ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
   def change
     create_table :issue_chats do |t|
       t.belongs_to :issue, index: true, foreign_key: true
