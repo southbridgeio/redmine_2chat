@@ -40,7 +40,7 @@ module Redmine2chat::Telegram
           executing_command.destroy
           send_message(
             I18n.t('redmine_2chat.bot.new_issue.user_not_found'),
-            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true))
+            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json)
         end
       end
 
