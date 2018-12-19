@@ -1,6 +1,8 @@
 class IssueChatsController < ApplicationController
   include Redmine2chat::Operations
 
+  skip_before_action :check_if_login_required, only: :tg_join
+
   def create
     @issue = Issue.visible.find(params[:issue_id])
     @issue.with_lock do
