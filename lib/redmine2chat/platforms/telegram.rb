@@ -16,7 +16,7 @@ module Redmine2chat::Platforms
     end
 
     def create_chat(title)
-      bot_id = Setting.plugin_redmine_bots['telegram_bot_id']
+      bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id']
       result = Utils.create_chat.(title, [bot_id])
       chat_id = result['id']
       result = Utils.get_chat_link.(chat_id)

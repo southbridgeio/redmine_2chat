@@ -3,6 +3,8 @@ class IssueChatDailyReportWorker
   include Redmine::I18n
 
   def perform(issue_id, yesterday_string)
+    settings = Setting.find_by_name(:plugin_redmine_bots).value
+
     I18n.locale = Setting['default_language']
 
     yesterday = Date.parse yesterday_string
@@ -13,8 +15,8 @@ class IssueChatDailyReportWorker
     chat_messages = issue.chat_messages
                              .where(sent_at: time_from..time_to)
                              .where(is_system: false)
-                             .where.not(im_id: [Setting.plugin_redmine_bots['telegram_bot_id'],
-                                                  Setting.plugin_redmine_bots['telegram_robot_id']])
+                             .where.not(im_id: [settings['telegram_bot_id'],
+                                                settings['telegram_robot_id']])
 
     if chat_messages.present?
       date_string       = format_date(yesterday)
