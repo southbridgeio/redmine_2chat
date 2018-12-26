@@ -8,7 +8,7 @@ class IssueChatDailyReportCronWorker
       time_to   = yesterday.end_of_day
 
       Issue.joins(:chat_messages).where('chat_messages.sent_at >= ? and chat_messages.sent_at <= ?',
-                                            time_from, time_to).uniq.find_each do |issue|
+                                            time_from, time_to).uniq.each do |issue|
         IssueChatDailyReportWorker.perform_async(issue.id, yesterday.to_s)
       end
     end

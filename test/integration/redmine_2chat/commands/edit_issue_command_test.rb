@@ -158,7 +158,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
       Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: 'null')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
   end
@@ -188,7 +188,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
       Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: 'null')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
   end
@@ -216,7 +216,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
       Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
       Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: nil)
+        .with(text, reply_markup: 'null')
       Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
     end
   end

@@ -40,7 +40,7 @@ module Redmine2chat::Telegram
           executing_command.destroy
           send_message(
             I18n.t('redmine_2chat.bot.new_issue.user_not_found'),
-            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true))
+            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json)
         end
       end
 
@@ -71,7 +71,7 @@ module Redmine2chat::Telegram
           keyboard: [[I18n.t('redmine_2chat.bot.new_issue.yes_answer'),
                       I18n.t('redmine_2chat.bot.new_issue.no_answer')]],
           one_time_keyboard: true,
-          resize_keyboard: true)
+          resize_keyboard: true).to_json
 
         send_message(message_text,
                      reply_markup: keyboard)
@@ -94,7 +94,7 @@ module Redmine2chat::Telegram
 
         send_message(
           I18n.t('redmine_2chat.bot.creating_chat'),
-          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
+          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json
         )
 
         CreateChat.(issue)
@@ -158,7 +158,7 @@ module Redmine2chat::Telegram
         Telegram::Bot::Types::ReplyKeyboardMarkup.new(
           keyboard: project_names.each_slice(2).to_a,
           one_time_keyboard: true,
-          resize_keyboard: true)
+          resize_keyboard: true).to_json
       end
 
       def assignable_list_markup(assignables)
@@ -174,7 +174,7 @@ module Redmine2chat::Telegram
         Telegram::Bot::Types::ReplyKeyboardMarkup.new(
           keyboard: assignables_names.each_slice(2).to_a,
           one_time_keyboard: true,
-          resize_keyboard: true)
+          resize_keyboard: true).to_json
       end
 
       def executing_command

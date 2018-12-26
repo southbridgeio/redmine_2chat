@@ -2,10 +2,8 @@ module Redmine2chat::Patches
   module IssuePatch
     def self.included(base) # :nodoc:
       base.class_eval do
-        unloadable
-
-        has_many :chat_messages, through: :chats, source: :messages
         has_many :chats, class_name: 'IssueChat'
+        has_many :chat_messages, through: :chats, source: :messages
         has_one :active_chat, -> { active }, class_name: 'IssueChat'
 
         before_save :set_need_to_close, :reset_need_to_close

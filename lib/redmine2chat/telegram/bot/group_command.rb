@@ -34,7 +34,7 @@ module Redmine2chat::Telegram
       def handle_group_command
         if !group_commands.include?(command_name) && command_name.present?
           if private_commands.include?(command_name)
-            send_message(I18n.t('redmine_bots.bot.group.private_command'))
+            send_message(I18n.t('redmine_bots.telegram.bot.group.private_command'))
           end
         else
           if group_common_command?
@@ -136,6 +136,7 @@ module Redmine2chat::Telegram
       end
 
       def edit_group_admin(telegram_user, is_admin = true)
+        return unless issue.active_chat
         toggle_chat_admin.(issue.active_chat.im_id, telegram_user.id, is_admin)
       end
 
