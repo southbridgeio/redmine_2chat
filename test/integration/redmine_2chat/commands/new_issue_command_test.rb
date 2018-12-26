@@ -45,7 +45,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
           text = I18n.t('redmine_2chat.bot.new_issue.choice_project_without_page')
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text, reply_markup: nil)
+            .with(text, reply_markup: 'null')
 
           Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
         end
@@ -75,7 +75,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
           text = I18n.t('redmine_2chat.bot.new_issue.choice_user')
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text, reply_markup: nil)
+            .with(text, reply_markup: 'null')
 
           Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
         end
@@ -85,7 +85,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
           Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text, reply_markup: nil)
+            .with(text, reply_markup: 'null')
 
           Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
         end
@@ -159,7 +159,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 HTML
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text.chomp, reply_markup: nil)
+            .with(text.chomp, reply_markup: 'null')
 
           Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
         end
@@ -182,7 +182,7 @@ HTML
         it 'creates chat for issue is user send "yes"' do
           Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
 
-          command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'Yes'))
+          command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'Yes').to_json)
 
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
