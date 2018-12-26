@@ -182,13 +182,13 @@ HTML
         it 'creates chat for issue is user send "yes"' do
           Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
 
-          command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'Yes').to_json)
+          command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'Yes'))
 
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(
               I18n.t('redmine_2chat.bot.creating_chat'),
-              reply_markup: nil
+              reply_markup: 'null'
             )
           Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
             .expects(:send_message)
