@@ -1,11 +1,4 @@
 module Redmine2chat::Platforms
-  module Utils
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::CreateChat
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::GetChatLink
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::CloseChat
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::Client
-  end
-
   class Telegram
     def icon_path
       '/plugin_assets/redmine_2chat/images/telegram-icon.png'
@@ -16,18 +9,13 @@ module Redmine2chat::Platforms
     end
 
     def create_chat(title)
-      bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id']
-      result = Utils.create_chat.(title, [bot_id])
-      chat_id = result['id']
-      result = Utils.get_chat_link.(chat_id)
-
-      { im_id: chat_id, chat_url: convert_link(result['invite_link']) }
+      bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id'].presence
+      RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then { |chat| { im_id: chat.id, chat_url: convert_link(chat.invite_link) } }
     end
 
     def close_chat(im_id, message)
       send_message(im_id, message)
-      Utils.close_chat.(im_id)
-      Utils.get_chat_link.(im_id)
+      RedmineBots::Telegram::Tdlib::CloseChat.(im_id)
     end
 
     def send_message(im_id, message, params = {})

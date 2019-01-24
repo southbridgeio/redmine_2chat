@@ -11,24 +11,30 @@ class IssueChatsController < ApplicationController
         return
       end
 
-      CreateChat.(@issue)
+      CreateChat.(@issue).then do
+        @project = @issue.project
+
+        @last_journal    = @issue.journals.visible.order('created_on').last
+        new_journal_path = "#{issue_path(@issue)}/#change-#{@last_journal.id}"
+        render js: "window.location = '#{new_journal_path}'"
+      end.rescue do |error|
+        flash[:error] = error.message
+        render js: "window.location = '#{issue_path(@issue)}'"
+      end.wait
     end
-
-    @project = @issue.project
-
-    @last_journal    = @issue.journals.visible.order('created_on').last
-    new_journal_path = "#{issue_path(@issue)}/#change-#{@last_journal.id}"
-    render js: "window.location = '#{new_journal_path}'"
   end
 
   def destroy
     @issue   = Issue.visible.find(params[:id])
     @project = @issue.project
 
-    CloseChat.(@issue)
-
-    @last_journal = @issue.journals.visible.order('created_on').last
-    redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
+    CloseChat.(@issue).then do
+      @last_journal = @issue.journals.visible.order('created_on').last
+      redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
+    end.rescue do |error|
+      flash[:error] = error.message
+      redirect_to issue_path(@issue)
+    end.wait
   end
 
   def tg_join
