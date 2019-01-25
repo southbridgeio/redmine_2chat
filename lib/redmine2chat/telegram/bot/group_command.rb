@@ -4,9 +4,6 @@ module Redmine2chat::Telegram
       include IssuesHelper
       include ActionView::Helpers::TagHelper
       include ERB::Util
-      include RedmineBots::Telegram::Tdlib::DependencyProviders::RenameChat
-      include RedmineBots::Telegram::Tdlib::DependencyProviders::GetChat
-      include RedmineBots::Telegram::Tdlib::DependencyProviders::ToggleChatAdmin
 
       private
 

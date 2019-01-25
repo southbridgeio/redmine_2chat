@@ -10,7 +10,11 @@ module Redmine2chat::Platforms
 
     def create_chat(title)
       bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id'].presence
-      RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then { |chat| { im_id: chat.id, chat_url: convert_link(chat.invite_link) } }
+
+      RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then do |chat|
+        invite_link = RedmineBots::Telegram::Tdlib::GetChatLink.(chat.id).value!.invite_link
+        { im_id: chat.id, chat_url: convert_link(invite_link) }
+      end
     end
 
     def close_chat(im_id, message)
