@@ -5,9 +5,9 @@ module Redmine2chat::Operations
     end
 
     def call
-      Issue.transaction do
-        title = "#{@issue.project.name} #{@issue.id}"
-        Redmine2chat.active_platform.create_chat(title).then do |result|
+      title = "#{@issue.project.name} #{@issue.id}"
+      Redmine2chat.active_platform.create_chat(title).fmap do |result|
+        Issue.transaction do
           im_id, chat_url = result.values_at(:im_id, :chat_url)
           attributes = {
               im_id: im_id,
@@ -22,13 +22,8 @@ module Redmine2chat::Operations
 
           journal_text = I18n.t('redmine_2chat.journal.chat_was_created', chat_url: chat_url)
 
-          begin
-            @issue.init_journal(User.current, journal_text)
-            @issue.save!
-          rescue ActiveRecord::StaleObjectError
-            @issue.reload
-            retry
-          end
+          @issue.init_journal(User.current, journal_text)
+          @issue.save!
         end
       end
     end

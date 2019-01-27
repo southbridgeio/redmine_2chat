@@ -5,40 +5,41 @@ class IssueChatsController < ApplicationController
 
   def create
     @issue = Issue.visible.find(params[:issue_id])
-    @issue.with_lock do
-      if @issue.active_chat.present? && @issue.active_chat.shared_url.present?
-        redirect_to issue_path(@issue)
-        return
-      end
 
-      ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-        CreateChat.(@issue).then do
-          @project = @issue.project
+    if @issue.active_chat.present? && @issue.active_chat.shared_url.present?
+      redirect_to issue_path(@issue)
+      return
+    end
 
-          @last_journal    = @issue.journals.visible.order('created_on').last
-          new_journal_path = "#{issue_path(@issue)}/#change-#{@last_journal.id}"
-          render js: "window.location = '#{new_journal_path}'"
-        end.rescue do |error|
-          flash[:error] = error.message
-          render js: "window.location = '#{issue_path(@issue)}'"
-        end.wait!
-      end
+    CreateChat.(@issue).fmap do
+      @project = @issue.project
+
+      @last_journal = @issue.journals.visible.order('created_on').last
+      new_journal_path = "#{issue_path(@issue)}/#change-#{@last_journal.id}"
+      render js: "window.location = '#{new_journal_path}'"
+    end.or do |error|
+      flash[:error] = error
+      render js: "window.location = '#{issue_path(@issue)}'"
     end
   end
 
   def destroy
-    @issue   = Issue.visible.find(params[:id])
+    @issue = Issue.visible.find(params[:id])
     @project = @issue.project
 
-    ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-      CloseChat.(@issue).then do
+    Rails.application.executor.wrap do
+      promise = CloseChat.(@issue).then do
         @last_journal = @issue.journals.visible.order('created_on').last
         redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
-      end.rescue do |error|
-        flash[:error] = error.message
-        redirect_to issue_path(@issue)
-      end.wait!
+      end
+
+      ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+        promise.wait!
+      end
     end
+  rescue TD::Error => error
+    flash[:error] = error.message
+    redirect_to issue_path(@issue)
   end
 
   def tg_join

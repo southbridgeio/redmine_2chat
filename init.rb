@@ -6,6 +6,7 @@ FileUtils.mkdir_p(tmp_dir) unless Dir.exist?(tmp_dir)
 
 require_dependency Rails.root.join('plugins','redmine_bots', 'init')
 require 'redmine2chat'
+require 'dry/monads/result'
 
 # Rails 5.1/Rails 4
 reloader = defined?(ActiveSupport::Reloader) ? ActiveSupport::Reloader : ActionDispatch::Reloader
