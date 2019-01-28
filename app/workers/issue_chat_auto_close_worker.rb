@@ -32,7 +32,7 @@ class IssueChatAutoCloseWorker
       im_id = issue.active_chat.im_id
 
       issue.active_chat.update_column(:active, false)
-      IssueChatCloseWorker.perform_async(im_id, issue.active_chat.platform_name)
+      issue.active_chat.platform.close_chat(im_id, '')
     end
   end
 

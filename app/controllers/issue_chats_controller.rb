@@ -27,19 +27,13 @@ class IssueChatsController < ApplicationController
     @issue = Issue.visible.find(params[:id])
     @project = @issue.project
 
-    Rails.application.executor.wrap do
-      promise = CloseChat.(@issue).then do
-        @last_journal = @issue.journals.visible.order('created_on').last
-        redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
-      end
-
-      ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-        promise.wait!
-      end
+    CloseChat.(@issue).fmap do
+      @last_journal = @issue.journals.visible.order('created_on').last
+      redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
+    end.or do |error|
+      flash[:error] = error.message
+      redirect_to issue_path(@issue)
     end
-  rescue TD::Error => error
-    flash[:error] = error.message
-    redirect_to issue_path(@issue)
   end
 
   def tg_join
