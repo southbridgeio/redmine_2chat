@@ -28,12 +28,7 @@ class IssueChatAutoCloseWorker
   end
 
   def close_old_chats
-    need_to_close_issues.find_each do |issue|
-      im_id = issue.active_chat.im_id
-
-      issue.active_chat.update_column(:active, false)
-      issue.active_chat.platform.close_chat(im_id, '')
-    end
+    need_to_close_issues.find_each { |issue| Redmine2chat::Operations::CloseChat.(issue) }
   end
 
   def need_to_close_issues
