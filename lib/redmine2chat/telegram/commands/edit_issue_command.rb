@@ -202,7 +202,7 @@ module Redmine2chat::Telegram
         if issue.active_chat.present? && issue.active_chat.im_id.present?
           if name.present?
             if account.user.allowed_to?(:edit_issues, issue.project)
-              rename_chat.(issue.active_chat.im_id, name)
+              RedmineBots::Telegram::Tdlib::RenameChat.(issue.active_chat.im_id, name)
               executing_command.destroy
               send_message(locale('chat_name_changed'))
             else

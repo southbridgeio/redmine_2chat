@@ -194,7 +194,7 @@ module Redmine2chat::Telegram
 
       def change_issue_chat_name(name)
         if name.present?
-          rename_chat.(issue.active_chat.im_id, name)
+          RedmineBots::Telegram::Tdlib::RenameChat.(issue.active_chat.im_id, name)
         else
           chat_info = get_chat.(issue.active_chat.im_id)
           send_message(chat_info['title'].to_s)
