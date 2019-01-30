@@ -31,7 +31,7 @@ class IssueChatsController < ApplicationController
       @last_journal = @issue.journals.visible.order('created_on').last
       redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
     end.or do |error|
-      flash[:error] = error.message
+      flash[:error] = error
       redirect_to issue_path(@issue)
     end
   end
