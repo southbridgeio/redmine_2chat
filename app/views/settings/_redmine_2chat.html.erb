@@ -1,3 +1,5 @@
+<%= render partial: 'settings/redmine_bots/deprecation_warning' %>
+
 <% unless Redmine::Plugin.installed?('redmine_sidekiq') %>
   <h1 style="text-align: center">
     !!! <a href="https://github.com/ogom/redmine_sidekiq" target="_blank">redmine_sidekiq</a>
