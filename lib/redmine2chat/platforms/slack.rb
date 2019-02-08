@@ -1,22 +1,22 @@
 module Redmine2chat::Platforms
   class Slack
+    include Dry::Monads::Result::Mixin
+
     def create_chat(title)
-      Concurrent::Promises.future do
-        channel = robot_client.channels_create(name: title).channel
-        team = robot_client.team_info.team
-        bot_id = bot_client.auth_test.user_id
+      channel = robot_client.channels_create(name: title).channel
+      team = robot_client.team_info.team
+      bot_id = bot_client.auth_test.user_id
 
-        robot_client.channels_invite(channel: channel.id, user: bot_id)
+      robot_client.channels_invite(channel: channel.id, user: bot_id)
 
-        { im_id: channel.id, chat_url: "slack://channel?id=#{channel.id}&team=#{team.id}" }
-      end
+      Success({ im_id: channel.id, chat_url: "slack://channel?id=#{channel.id}&team=#{team.id}" })
     end
 
     def close_chat(im_id, message)
-      Concurrent::Promises.future do
-        robot_client.chat_postMessage(channel: im_id, text: message)
-        robot_client.channels_archive(channel: im_id)
-      end
+      robot_client.chat_postMessage(channel: im_id, text: message)
+      robot_client.channels_archive(channel: im_id)
+
+      Success(true)
     end
 
     def send_message(im_id, message, **)
