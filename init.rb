@@ -6,6 +6,7 @@ FileUtils.mkdir_p(tmp_dir) unless Dir.exist?(tmp_dir)
 
 require_dependency Rails.root.join('plugins','redmine_bots', 'init')
 require 'redmine2chat'
+require 'dry/monads/result'
 
 # Rails 5.1/Rails 4
 reloader = defined?(ActiveSupport::Reloader) ? ActiveSupport::Reloader : ActionDispatch::Reloader
@@ -48,7 +49,7 @@ Redmine::Plugin.register :redmine_2chat do
   name 'Redmine 2Chat'
   url 'https://github.com/centosadmin/redmine_2chat'
   description 'This is a plugin for Redmine which adds group chats to Redmine issues on different chat platforms such as Slack and Telegram.'
-  version '0.2.0'
+  version '0.3.0'
   author 'Southbridge'
   author_url 'https://github.com/centosadmin'
 

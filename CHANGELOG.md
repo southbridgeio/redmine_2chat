@@ -1,3 +1,8 @@
+# 0.3.0
+* Use new redmine_bots API
+* Improve errors handling
+* Add plugins deprecation warning
+
 # 0.2.0
 
 * Fix edit group admin command

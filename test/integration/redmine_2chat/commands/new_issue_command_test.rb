@@ -1,6 +1,8 @@
 require File.expand_path('../../../../test_helper', __FILE__)
 
 class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::TestCase
+  include Dry::Monads::Result::Mixin
+
   fixtures :projects, :trackers, :issues, :users, :email_addresses, :roles, :issue_statuses
 
   let(:issue) { Issue.find(1) }
@@ -29,7 +31,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
     describe 'when account is present' do
       before do
         @account = ::TelegramAccount.create(telegram_id: 998_899, user_id: user.id)
-        Redmine2chat.active_platform.stubs(:create_chat).returns(im_id: 1, chat_url: 'http://telegram.me/chat')
+        Redmine2chat.active_platform.stubs(:create_chat).returns(Success(im_id: 1, chat_url: 'http://telegram.me/chat'))
       end
 
       describe 'step 1' do

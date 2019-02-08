@@ -1,6 +1,5 @@
 require File.expand_path('../../../test_helper', __FILE__)
 require_relative '../../../app/workers/issue_chat_close_notification_worker.rb'
-require_relative '../../../app/workers/issue_chat_close_worker.rb'
 require_relative '../../../app/workers/issue_chat_auto_close_worker.rb'
 require 'minitest/mock'
 require 'minitest/autorun'
@@ -33,9 +32,9 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'closes groups only for issues with required statuses' do
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [@telegram_group.im_id, 'telegram'])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
 
-      IssueChatCloseWorker.stub :perform_async, mock_worker do
+      Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
         IssueChatAutoCloseWorker.new.perform
       end
 
@@ -43,8 +42,12 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'notify only for issues with required statuses' do
-      IssueChatCloseNotificationWorker.expects(:perform_async).with(1)
-      IssueChatAutoCloseWorker.new.perform
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
+
+      Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
+        IssueChatCloseNotificationWorker.expects(:perform_async).with(1)
+        IssueChatAutoCloseWorker.new.perform
+      end
     end
   end
 
@@ -54,9 +57,9 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'close groups only for issues with required statuses' do
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [@another_telegram_group.im_id, 'telegram'])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
 
-      IssueChatCloseWorker.stub :perform_async, mock_worker do
+      Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
         IssueChatAutoCloseWorker.new.perform
       end
 
@@ -64,8 +67,12 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'notify only for issues with required statuses' do
-      IssueChatCloseNotificationWorker.expects(:perform_async).with(2)
-      IssueChatAutoCloseWorker.new.perform
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
+
+      Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
+        IssueChatCloseNotificationWorker.expects(:perform_async).with(2)
+        IssueChatAutoCloseWorker.new.perform
+      end
     end
   end
 end

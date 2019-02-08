@@ -5,30 +5,35 @@ class IssueChatsController < ApplicationController
 
   def create
     @issue = Issue.visible.find(params[:issue_id])
-    @issue.with_lock do
-      if @issue.active_chat.present? && @issue.active_chat.shared_url.present?
-        redirect_to issue_path(@issue)
-        return
-      end
 
-      CreateChat.(@issue)
+    if @issue.active_chat.present? && @issue.active_chat.shared_url.present?
+      redirect_to issue_path(@issue)
+      return
     end
 
-    @project = @issue.project
+    CreateChat.(@issue).fmap do
+      @project = @issue.project
 
-    @last_journal    = @issue.journals.visible.order('created_on').last
-    new_journal_path = "#{issue_path(@issue)}/#change-#{@last_journal.id}"
-    render js: "window.location = '#{new_journal_path}'"
+      @last_journal = @issue.journals.visible.order('created_on').last
+      new_journal_path = "#{issue_path(@issue)}/#change-#{@last_journal.id}"
+      render js: "window.location = '#{new_journal_path}'"
+    end.or do |error|
+      flash[:error] = error
+      render js: "window.location = '#{issue_path(@issue)}'"
+    end
   end
 
   def destroy
-    @issue   = Issue.visible.find(params[:id])
+    @issue = Issue.visible.find(params[:id])
     @project = @issue.project
 
-    CloseChat.(@issue)
-
-    @last_journal = @issue.journals.visible.order('created_on').last
-    redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
+    CloseChat.(@issue).fmap do
+      @last_journal = @issue.journals.visible.order('created_on').last
+      redirect_to "#{issue_path(@issue)}#change-#{@last_journal.id}"
+    end.or do |error|
+      flash[:error] = error
+      redirect_to issue_path(@issue)
+    end
   end
 
   def tg_join

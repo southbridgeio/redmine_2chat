@@ -1,12 +1,7 @@
 module Redmine2chat::Platforms
-  module Utils
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::CreateChat
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::GetChatLink
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::CloseChat
-    extend RedmineBots::Telegram::Tdlib::DependencyProviders::Client
-  end
-
   class Telegram
+    include Dry::Monads::Result::Mixin
+
     def icon_path
       '/plugin_assets/redmine_2chat/images/telegram-icon.png'
     end
@@ -16,18 +11,28 @@ module Redmine2chat::Platforms
     end
 
     def create_chat(title)
-      bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id']
-      result = Utils.create_chat.(title, [bot_id])
-      chat_id = result['id']
-      result = Utils.get_chat_link.(chat_id)
+      bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id'].presence
 
-      { im_id: chat_id, chat_url: convert_link(result['invite_link']) }
+      Rails.application.executor.wrap do
+        promise = RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then do |chat|
+          invite_link = RedmineBots::Telegram::Tdlib::GetChatLink.(chat.id).value!.invite_link
+          { im_id: chat.id, chat_url: convert_link(invite_link) }
+        end
+
+        ActiveSupport::Dependencies.interlock.permit_concurrent_loads { Success(promise.value!) }
+      end
+    rescue TD::Error => error
+      Failure("Tdlib error: #{error.message}")
     end
 
     def close_chat(im_id, message)
       send_message(im_id, message)
-      Utils.close_chat.(im_id)
-      Utils.get_chat_link.(im_id)
+      Rails.application.executor.wrap do
+        promise = RedmineBots::Telegram::Tdlib::CloseChat.(im_id)
+        ActiveSupport::Dependencies.interlock.permit_concurrent_loads { Success(promise.value!) }
+      end
+    rescue TD::Error => error
+      Failure("Tdlib error: #{error.message}")
     end
 
     def send_message(im_id, message, params = {})

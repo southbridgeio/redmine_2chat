@@ -2,6 +2,8 @@ require File.expand_path('../../../../test_helper', __FILE__)
 require File.expand_path('../../../../../app/workers/issue_chat_message_sender_worker', __FILE__)
 
 class Redmine2chat::Telegram::Commands::IssueChatCommandTest < ActiveSupport::TestCase
+  include Dry::Monads::Result::Mixin
+
   fixtures :projects, :trackers, :issues, :users, :issue_statuses, :journals, :email_addresses, :enabled_modules
 
   let(:user) { User.find(1) }
@@ -22,7 +24,7 @@ class Redmine2chat::Telegram::Commands::IssueChatCommandTest < ActiveSupport::Te
 
   before do
     TelegramAccount.create(user_id: user.id, telegram_id: 998_899)
-    Redmine2chat.active_platform.stubs(:create_chat).returns(im_id: 1, chat_url: 'http://telegram.me/chat')
+    Redmine2chat.active_platform.stubs(:create_chat).returns(Success(im_id: 1, chat_url: 'http://telegram.me/chat'))
     Redmine2chat::Operations::CloseChat.stubs(:call)
   end
 
