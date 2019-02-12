@@ -13,13 +13,13 @@ module Redmine2chat::Platforms
     def create_chat(title)
       bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id'].presence
 
-      Rails.application.executor.wrap do
+      RedmineBots::Telegram::Tdlib.wrap do
         promise = RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then do |chat|
           invite_link = RedmineBots::Telegram::Tdlib::GetChatLink.(chat.id).value!.invite_link
           { im_id: chat.id, chat_url: convert_link(invite_link) }
         end
 
-        ActiveSupport::Dependencies.interlock.permit_concurrent_loads { Success(promise.value!) }
+        RedmineBots::Telegram::Tdlib.permit_concurrent_loads { Success(promise.value!) }
       end
     rescue TD::Error => error
       Failure("Tdlib error: #{error.message}")
@@ -27,9 +27,9 @@ module Redmine2chat::Platforms
 
     def close_chat(im_id, message)
       send_message(im_id, message)
-      Rails.application.executor.wrap do
+      RedmineBots::Telegram::Tdlib.wrap do
         promise = RedmineBots::Telegram::Tdlib::CloseChat.(im_id)
-        ActiveSupport::Dependencies.interlock.permit_concurrent_loads { Success(promise.value!) }
+        RedmineBots::Telegram::Tdlib.permit_concurrent_loads { Success(promise.value!) }
       end
     rescue TD::Error => error
       Failure("Tdlib error: #{error.message}")
