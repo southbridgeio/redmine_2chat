@@ -248,7 +248,7 @@ module Redmine2chat::Telegram
         executing_command.destroy
         send_message(
           locale('incorrect_value'),
-          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(hide_keyboard: true).to_json)
+          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json)
       end
 
       def executing_command
