@@ -36,7 +36,7 @@ module Redmine2chat::Telegram
         @account ||=
           begin
             account = TelegramAccount.find_by!(telegram_id: command.from.id)
-            if account.user
+            if account.user && !account.user.locked?
               account
             else
               send_message(I18n.t('redmine_2chat.bot.account_not_connected'))
