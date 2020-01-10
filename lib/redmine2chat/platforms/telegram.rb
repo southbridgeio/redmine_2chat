@@ -2,6 +2,12 @@ module Redmine2chat::Platforms
   class Telegram
     include Dry::Monads::Result::Mixin
 
+    class ChatUpgradedError
+      def self.===(e)
+        e.is_a?(::Telegram::Bot::Exceptions::ResponseError) && e.message.include?('group chat was upgraded to a supergroup chat')
+      end
+    end
+
     def icon_path
       '/plugin_assets/redmine_2chat/images/telegram-icon.png'
     end
@@ -42,7 +48,14 @@ module Redmine2chat::Platforms
           bot_token: RedmineBots::Telegram.bot_token
       }.merge(params)
 
-      RedmineBots::Telegram::Bot::MessageSender.call(message_params)
+      begin
+        RedmineBots::Telegram::Bot::MessageSender.call(message_params)
+      rescue ChatUpgradedError => e
+        new_chat_id = e.send(:data).dig('parameters', 'migrate_to_chat_id')
+        issue_chat = IssueChat.find_by(im_id: im_id, platform_name: 'telegram')
+        new_chat_id && issue_chat&.update!(im_id: new_chat_id) || raise(e)
+        message_params.merge!(chat_id: new_chat_id) && retry
+      end
     end
 
     private

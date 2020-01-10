@@ -5,6 +5,12 @@ module Redmine2chat::Telegram
       include ActionView::Helpers::TagHelper
       include ERB::Util
 
+      class AdminEditingDisabledError
+        def self.===(e)
+          e.is_a?(TD::Error) && e.message.include?('Administrators editing is disabled')
+        end
+      end
+
       private
 
       def group_common_commands
@@ -134,7 +140,9 @@ module Redmine2chat::Telegram
 
       def edit_group_admin(telegram_user, is_admin = true)
         return unless issue.active_chat
-        RedmineBots::Telegram::Tdlib::ToggleChatAdmin.(issue.active_chat.im_id, telegram_user.id, is_admin)
+        RedmineBots::Telegram::Tdlib::ToggleChatAdmin.(issue.active_chat.im_id, telegram_user.id, is_admin).wait!
+      rescue AdminEditingDisabledError
+        # skip
       end
 
       def left_chat_member

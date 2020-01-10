@@ -49,11 +49,11 @@ Redmine::Plugin.register :redmine_2chat do
   name 'Redmine 2Chat'
   url 'https://github.com/southbridgeio/redmine_2chat'
   description 'This is a plugin for Redmine which adds group chats to Redmine issues on different chat platforms such as Slack and Telegram.'
-  version '0.3.1'
+  version '0.3.2'
   author 'Southbridge'
   author_url 'https://github.com/southbridgeio'
 
-  requires_redmine_plugin :redmine_bots, '0.2.0'
+  requires_redmine_plugin :redmine_bots, '0.4.0'
 
   settings(default: {
              'daily_report' => '1',

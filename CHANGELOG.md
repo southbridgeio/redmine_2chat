@@ -1,3 +1,11 @@
+# 0.3.2
+
+* Handle supergroup upgrade error
+* Fix toggle admin command
+* Fix remove_keyboard error
+* Don’t respond to locked members commands
+* Handle "Administrators editing is disabled" errors
+
 # 0.3.1
 
 * Fix Rails 4 support
