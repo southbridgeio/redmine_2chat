@@ -16,8 +16,8 @@ Please help us make this plugin better telling us of any [issues](https://github
 
 ### Requirements
 
-* **Ruby 2.3+**
-* Configured [redmine_bots](https://github.com/centosadmin/redmine_bots)
+* **Ruby 2.4+**
+* Configured [redmine_bots](https://github.com/centosadmin/redmine_bots) (version 0.4.0 or higher)
 
 Standard plugin installation:
 
