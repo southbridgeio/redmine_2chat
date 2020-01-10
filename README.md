@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/centosadmin/redmine_2chat.svg?branch=master)](https://travis-ci.org/centosadmin/redmine_2chat)
+[![Build Status](https://travis-ci.org/southbridgeio/redmine_2chat.svg?branch=master)](https://travis-ci.org/southbridgeio/redmine_2chat)
 [![Rate at redmine.org](http://img.shields.io/badge/rate%20at-redmine.org-blue.svg?style=flat)](http://www.redmine.org/plugins/redmine_2chat)
 
 # redmine_2chat
@@ -9,7 +9,7 @@ The `redmine_2chat` can be used to create a group chat associated with an issue 
 
 There're currently Telegram and Slack supported to create chats in. You can also create your own platform adapter and register it.
 
-Please help us make this plugin better telling us of any [issues](https://github.com/centosadmin/redmine_2сhat/issues) you'll face using it. We are ready to answer all your questions regarding this plugin.
+Please help us make this plugin better telling us of any [issues](https://github.com/southbridgeio/redmine_2сhat/issues) you'll face using it. We are ready to answer all your questions regarding this plugin.
 
 
 ## Installation
@@ -18,12 +18,13 @@ Please help us make this plugin better telling us of any [issues](https://github
 
 * **Ruby 2.4+**
 * Configured [redmine_bots](https://github.com/centosadmin/redmine_bots) (version 0.4.0 or higher)
+* You need to use utf8mb4 encoding if you're using mysql database
 
 Standard plugin installation:
 
 ```
 cd {REDMINE_ROOT}
-git clone https://github.com/centosadmin/redmine_2chat.git plugins/redmine_2chat
+git clone https://github.com/southbridgeio/redmine_2chat.git plugins/redmine_2chat
 bundle install RAILS_ENV=production
 bundle exec rake redmine:plugins:migrate RAILS_ENV=production
 ```
@@ -77,7 +78,7 @@ issue - Change issues.
 
 ### Slack
 
-* Make sure you're done with configuring Slack in [redmine_bots](https://github.com/centosadmin/redmine_bots).
+* Make sure you're done with configuring Slack in [redmine_bots](https://github.com/southbridgeio/redmine_bots).
 * Set proper app scopes on your app Oauth and permissions page:
 
 ```
