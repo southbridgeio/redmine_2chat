@@ -25,7 +25,7 @@ module Redmine2chat::Telegram::Tdlib
     private
 
     def kick_member(chat_id, user_id)
-      client.set_chat_member_status(chat_id, user_id, ChatMemberStatus::Left.new)
+      client.set_chat_member_status(chat_id, user_id, ChatMemberStatus::Left.new).rescue { nil }
     end
   end
 end
