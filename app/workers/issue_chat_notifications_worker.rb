@@ -14,6 +14,7 @@ class IssueChatNotificationsWorker
     sleep 1
 
     journal = Journal.find(journal_id)
+    @issue = journal.issue
 
     message = "<b>#{journal.user.name}</b>"
 
