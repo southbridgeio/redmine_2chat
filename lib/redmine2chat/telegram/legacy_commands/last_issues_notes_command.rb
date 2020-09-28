@@ -1,5 +1,5 @@
 module Redmine2chat::Telegram
-  module Commands
+  module LegacyCommands
     class LastIssuesNotesCommand < BaseBotCommand
       def execute
         return unless account.present?
