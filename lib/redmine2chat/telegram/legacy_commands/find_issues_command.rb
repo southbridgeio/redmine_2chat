@@ -26,6 +26,8 @@ module Redmine2chat::Telegram
           'me'
         when %r{/deadline|/dl}
           'deadline'
+        else
+          'me'
         end
       end
 

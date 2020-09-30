@@ -49,7 +49,7 @@ module Redmine2chat::Platforms
       }.merge(params)
 
       begin
-        RedmineBots::Telegram.bot.async.send_message(message_params)
+        RedmineBots::Telegram.bot.send_message(**message_params)
       rescue ChatUpgradedError => e
         new_chat_id = e.send(:data).dig('parameters', 'migrate_to_chat_id')
         issue_chat = IssueChat.find_by(im_id: im_id, platform_name: 'telegram')

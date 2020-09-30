@@ -21,6 +21,6 @@ class TelegramExecutingCommand < ActiveRecord::Base
     destroy
     RedmineBots::Telegram.bot.async.send_message(chat_id: command.chat.id,
                                                  text: I18n.t('redmine_2chat.bot.command_canceled'),
-                                                 reply_markup: ::Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json)
+                                                 reply_markup: RedmineBots::Telegram.bot.default_keyboard.to_json)
   end
 end
