@@ -21,6 +21,8 @@ module Redmine2chat::Platforms
 
       RedmineBots::Telegram::Tdlib.wrap do
         promise = RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then do |chat|
+          RedmineBots::Telegram::Tdlib::ToggleChatAdmin.(chat.id, bot_id)
+
           invite_link = RedmineBots::Telegram::Tdlib::GetChatLink.(chat.id).value!.invite_link
           { im_id: chat.id, chat_url: convert_link(invite_link) }
         end

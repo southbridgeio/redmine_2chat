@@ -138,11 +138,17 @@ module Redmine2chat::Telegram
         telegram_account && telegram_account.user && telegram_account.user.allowed_to?(:manage_chat, issue.project)
       end
 
-      def edit_group_admin(telegram_user, is_admin = true)
+      def edit_group_admin(telegram_user)
         return unless issue.active_chat
-        RedmineBots::Telegram::Tdlib::ToggleChatAdmin.(issue.active_chat.im_id, telegram_user.id, is_admin).wait!
-      rescue AdminEditingDisabledError
-        # skip
+        RedmineBots::Telegram.bot.async.promote_chat_member(chat_id: command.chat.id,
+                                                            user_id: telegram_user.id,
+                                                            can_change_info: true,
+                                                            can_delete_messages: true,
+                                                            can_invite_users: true,
+                                                            can_restrict_members: true,
+                                                            can_pin_messages: true,
+                                                            can_promote_members: true
+        )
       end
 
       def left_chat_member
