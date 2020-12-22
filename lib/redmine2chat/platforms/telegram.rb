@@ -17,11 +17,27 @@ module Redmine2chat::Platforms
     end
 
     def create_chat(title)
+      current_user = User.current
       bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id'].presence
 
       RedmineBots::Telegram::Tdlib.wrap do
         promise = RedmineBots::Telegram::Tdlib::CreateChat.(title, [bot_id].compact).then do |chat|
           RedmineBots::Telegram::Tdlib::ToggleChatAdmin.(chat.id, bot_id)
+          user_telegram_account = current_user.telegram_account
+          if user_telegram_account&.username
+            RedmineBots::Telegram::Tdlib::AddToChat.(chat.id, user_telegram_account.username).then do
+              RedmineBots::Telegram.bot.async.promote_chat_member(chat_id: chat.id,
+                                                                  user_id: user_telegram_account.telegram_id,
+                                                                  can_change_info: true,
+                                                                  can_delete_messages: true,
+                                                                  can_invite_users: true,
+                                                                  can_restrict_members: true,
+                                                                  can_pin_messages: true,
+                                                                  can_promote_members: true
+              )
+            end
+          end
+
 
           invite_link = RedmineBots::Telegram::Tdlib::GetChatLink.(chat.id).value!.invite_link
           { im_id: chat.id, chat_url: convert_link(invite_link) }
