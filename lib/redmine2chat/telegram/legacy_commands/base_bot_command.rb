@@ -1,5 +1,5 @@
 module Redmine2chat::Telegram
-  module Commands
+  module LegacyCommands
     class BaseBotCommand
       attr_reader :command, :logger
 

@@ -2,7 +2,7 @@ require File.expand_path('../../../../test_helper', __FILE__)
 require 'minitest/mock'
 require 'minitest/autorun'
 
-class Redmine2chat::Telegram::Commands::LastIssuesNotesCommandTest < ActiveSupport::TestCase
+class Redmine2chat::Telegram::LegacyCommands::LastIssuesNotesCommandTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues, :users, :issue_statuses, :journals
 
   let(:command) do
@@ -27,20 +27,20 @@ class Redmine2chat::Telegram::Commands::LastIssuesNotesCommandTest < ActiveSuppo
   it 'sends last five updated issues with journals' do
     text = "<a href=\"#{url_base}/issues/1\">#1</a>: Cannot print recipes <pre>Some notes with Redmine links: #2, r2.</pre> <i>#{issue_journal_time}</i>\n\n<a href=\"#{url_base}/issues/5\">#5</a>: Subproject issue <pre>New issue</pre>\n\n"
 
-    Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+    Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
       .expects(:send_message)
       .with(text)
 
-    Redmine2chat::Telegram::Commands::LastIssuesNotesCommand.new(command).execute
+    Redmine2chat::Telegram::LegacyCommands::LastIssuesNotesCommand.new(command).execute
   end
 
   it 'escapes html tags in journals' do
     Issue.find(1).journals.last.update(notes: '<pre>Note with tags.</pre> Some text.')
     text = "<a href=\"#{url_base}/issues/1\">#1</a>: Cannot print recipes <pre>Note with tags. Some text.</pre> <i>#{issue_journal_time}</i>\n\n<a href=\"#{url_base}/issues/5\">#5</a>: Subproject issue <pre>New issue</pre>\n\n"
-    Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+    Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
       .expects(:send_message)
       .with(text)
 
-    Redmine2chat::Telegram::Commands::LastIssuesNotesCommand.new(command).execute
+    Redmine2chat::Telegram::LegacyCommands::LastIssuesNotesCommand.new(command).execute
   end
 end

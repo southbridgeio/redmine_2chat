@@ -1,6 +1,6 @@
 require File.expand_path('../../../../test_helper', __FILE__)
 
-class Redmine2chat::Telegram::Commands::BotCommandTest < ActiveSupport::TestCase
+class Redmine2chat::Telegram::LegacyCommands::BotCommandTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues, :users, :email_addresses
 
   let(:user) { User.find(1) }
@@ -22,7 +22,7 @@ class Redmine2chat::Telegram::Commands::BotCommandTest < ActiveSupport::TestCase
       executing_command = TelegramExecutingCommand.create(name: 'new', account: account)
       TelegramExecutingCommand.any_instance.expects(:cancel)
 
-      Redmine2chat::Telegram::Commands::BotCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::BotCommand.new(command).execute
     end
   end
 
@@ -33,6 +33,6 @@ class Redmine2chat::Telegram::Commands::BotCommandTest < ActiveSupport::TestCase
     executing_command = TelegramExecutingCommand.create(name: 'new', account: account)
     TelegramExecutingCommand.any_instance.expects(:continue)
 
-    Redmine2chat::Telegram::Commands::BotCommand.new(command).execute
+    Redmine2chat::Telegram::LegacyCommands::BotCommand.new(command).execute
   end
 end

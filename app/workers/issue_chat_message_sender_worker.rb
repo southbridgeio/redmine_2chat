@@ -8,6 +8,6 @@ class IssueChatMessageSenderWorker
                   }
 
   def perform(im_id, platform_name, message, params = {})
-    Redmine2chat.platforms[platform_name].send_message(im_id, message, params)
+    Redmine2chat.platforms[platform_name].send_message(im_id, message, params.symbolize_keys)
   end
 end

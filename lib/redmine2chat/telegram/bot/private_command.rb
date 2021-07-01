@@ -30,7 +30,7 @@ module Redmine2chat::Telegram
           if private_common_command?
             execute_private_command
           else
-            Redmine2chat::Telegram::Commands::BotCommand.new(command, logger).execute
+            Redmine2chat::Telegram::LegacyCommands::BotCommand.new(command, logger).execute
           end
         elsif group_commands.include?(command_name)
           send_message(I18n.t('telegram_common.bot.private.group_command'))

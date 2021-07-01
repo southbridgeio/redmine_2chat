@@ -1,5 +1,5 @@
 module Redmine2chat::Telegram
-  class Bot < RedmineBots::Telegram::Bot
+  class Bot
     include PrivateCommand
     include GroupCommand
 
@@ -10,12 +10,6 @@ module Redmine2chat::Telegram
       @command = initialize_command(command)
     end
 
-    private
-
-    def initialize_command(command)
-      command.is_a?(::Telegram::Bot::Types::Message) ? command : ::Telegram::Bot::Types::Message.new(command)
-    end
-
     def execute_command
       if private_command?
         handle_private_command
@@ -24,16 +18,30 @@ module Redmine2chat::Telegram
       end
     end
 
-    def private_help_message
-      ['Redmine Chat Telegram:', help_command_list(private_commands, namespace: 'redmine_2chat', type: 'private')].join("\n")
+    private
+
+    def private_command?
+      command.chat.type == 'private'
     end
 
-    def group_help_message
-      ['Redmine Chat Telegram:', help_command_list(group_commands, namespace: 'redmine_2chat', type: 'group') + "\n#{I18n.t('redmine_2chat.bot.group.help.hint')}"].join("\n")
+    def initialize_command(command)
+      command.is_a?(::Telegram::Bot::Types::Message) ? command : ::Telegram::Bot::Types::Message.new(command)
     end
 
-    def bot_token
-      RedmineBots::Telegram.bot_token
+    def command_name
+      @command_name ||= command_text.scan(%r{^/(\w+)}).flatten.first
+    end
+
+    def command_text
+      @command_text ||= command.text.to_s
+    end
+
+    def chat_id
+      command.chat.id
+    end
+
+    def send_message(message, params: {})
+      Redmine2chat.platforms['telegram'].send_message(chat_id, message, params)
     end
   end
 end

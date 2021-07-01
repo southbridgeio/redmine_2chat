@@ -1,6 +1,6 @@
 require File.expand_path('../../../../test_helper', __FILE__)
 
-class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::TestCase
+class Redmine2chat::Telegram::LegacyCommands::EditIssueCommandTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues, :users, :issue_statuses, :roles, :enabled_modules, :issue_relations
 
   let(:command_params) do
@@ -31,10 +31,10 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
     it 'offers to send hepl if not arguments' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue'))
       text = I18n.t('redmine_2chat.bot.edit_issue.help')
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'offers to select editing param if issue id is present' do
@@ -44,20 +44,20 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text, reply_markup: '{}')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'offers to select project' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue project'))
       text = I18n.t('redmine_2chat.bot.new_issue.choice_project_without_page')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text, reply_markup: '{}')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'offers to select issue' do
@@ -71,7 +71,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         <a href="#{url_base}/issues/#{issue.id}">##{issue.id}</a>: #{issue.subject}
       HTML
 
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
 
@@ -82,11 +82,11 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
 
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text_2, reply_markup: '{}')
 
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'offers to send list of issues assigned to user and updated today' do
@@ -100,7 +100,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         <a href="#{url_base}/issues/#{issue.id}">##{issue.id}</a>: #{issue.subject}
       HTML
 
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
 
@@ -111,11 +111,11 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
 
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text_2, reply_markup: '{}')
 
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
   end
 
@@ -134,7 +134,7 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         <a href="#{url_base}/issues/#{issue.id}">##{issue.id}</a>: #{issue.subject}
       HTML
 
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
 
@@ -145,21 +145,21 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
 
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
 
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text_2, reply_markup: '{}')
 
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'finish command if project not found' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue incorrect_project_name'))
       text = I18n.t('redmine_2chat.bot.edit_issue.incorrect_value')
-      Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: 'null')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+        .with(text, reply_markup: 'default'.to_json)
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
   end
 
@@ -176,20 +176,22 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
         I18n.t('redmine_2chat.bot.edit_issue.cancel_hint')
       ].join(' ')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text, reply_markup: '{}')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'finish command if issue not found' do
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: '/issue 999'))
       text = I18n.t('redmine_2chat.bot.edit_issue.incorrect_value')
-      Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+
+      RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
+
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: 'null')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+        .with(text, reply_markup: 'default'.to_json)
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
   end
 
@@ -204,20 +206,20 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'status'))
       text = I18n.t('redmine_2chat.bot.edit_issue.select_status')
       Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new).returns({})
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text, reply_markup: '{}')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'finish command if params is incorrect' do
+      RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
       command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'incorrect'))
       text = I18n.t('redmine_2chat.bot.edit_issue.incorrect_value')
-      Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
-        .with(text, reply_markup: 'null')
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+        .with(text, reply_markup: 'default'.to_json)
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
   end
 
@@ -231,19 +233,19 @@ class Redmine2chat::Telegram::Commands::EditIssueCommandTest < ActiveSupport::Te
     it 'updates issue if value is correct' do
       command =  Telegram::Bot::Types::Message.new(command_params.merge(text: 'new subject'))
       text = '<strong>Subject</strong> changed from <i>Cannot print recipes</i> to <i>new subject</i>'
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
 
     it 'finish command with error if value is incorrect' do
       command =  Telegram::Bot::Types::Message.new(command_params.merge(text: ''))
       text = I18n.t('redmine_2chat.bot.error_editing_issue')
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::EditIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
     end
   end
 end

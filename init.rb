@@ -26,7 +26,17 @@ reloader.to_prepare do
                                             Redmine2chat::Platforms::Slack::Commands::Spent,
                                             Redmine2chat::Platforms::Slack::Commands::Yspent
 
-  RedmineBots::Telegram.update_manager.add_handler(->(message) { Redmine2chat::Telegram::Bot.new(message).call if message.is_a?(::Telegram::Bot::Types::Message) })
+  %w[new hot me deadline dl spent yspent last chat task issue ih th].each do |command|
+    RedmineBots::Telegram.bot.register_handler(Redmine2chat::Telegram::Handlers::PrivateLegacyCommand.new(command))
+  end
+
+  %w[task link url log subject start_date due_date estimated_hours done_ratio project tracker status priority assigned_to subject_chat].each do |command|
+    RedmineBots::Telegram.bot.register_handler(Redmine2chat::Telegram::Handlers::GroupLegacyCommand.new(command))
+  end
+
+  RedmineBots::Telegram.bot.register_handler(Redmine2chat::Telegram::Handlers::ChatMessageHandler.new)
+
+  RedmineBots::Telegram.bot.register_persistent_command(TelegramExecutingCommand)
 end
 
 Rails.application.config.eager_load_paths += Dir.glob("#{Rails.application.config.root}/plugins/redmine_2chat/{lib,app/workers,app/models,app/controllers}")

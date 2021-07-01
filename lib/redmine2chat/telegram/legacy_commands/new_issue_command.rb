@@ -1,5 +1,5 @@
 module Redmine2chat::Telegram
-  module Commands
+  module LegacyCommands
     class NewIssueCommand < BaseBotCommand
       include Redmine2chat::Operations
       
@@ -40,7 +40,7 @@ module Redmine2chat::Telegram
           executing_command.destroy
           send_message(
             I18n.t('redmine_2chat.bot.new_issue.user_not_found'),
-            reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json)
+            reply_markup: RedmineBots::Telegram.bot.default_keyboard.to_json)
         end
       end
 
@@ -69,7 +69,7 @@ module Redmine2chat::Telegram
 
         keyboard = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
           keyboard: [[I18n.t('redmine_2chat.bot.new_issue.yes_answer'),
-                      I18n.t('redmine_2chat.bot.new_issue.no_answer')]],
+                      I18n.t('redmine_2chat.bot.new_issue.no_answer'), '/cancel']],
           one_time_keyboard: true,
           resize_keyboard: true).to_json
 
@@ -94,7 +94,7 @@ module Redmine2chat::Telegram
 
         send_message(
           I18n.t('redmine_2chat.bot.creating_chat'),
-          reply_markup: Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true).to_json
+          reply_markup: RedmineBots::Telegram.bot.default_keyboard.to_json
         )
 
         CreateChat.(issue)
@@ -156,7 +156,7 @@ module Redmine2chat::Telegram
         end
 
         Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-          keyboard: project_names.each_slice(2).to_a,
+          keyboard: project_names.each_slice(2).to_a + ['/cancel'],
           one_time_keyboard: true,
           resize_keyboard: true).to_json
       end
@@ -172,7 +172,7 @@ module Redmine2chat::Telegram
         assignables_names.prepend I18n.t('redmine_2chat.bot.new_issue.without_user')
 
         Telegram::Bot::Types::ReplyKeyboardMarkup.new(
-          keyboard: assignables_names.each_slice(2).to_a,
+          keyboard: assignables_names.each_slice(2).to_a + ['/cancel'],
           one_time_keyboard: true,
           resize_keyboard: true).to_json
       end

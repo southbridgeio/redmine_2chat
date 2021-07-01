@@ -1,5 +1,5 @@
 module Redmine2chat::Telegram
-  module Commands
+  module LegacyCommands
     class FindIssuesCommand < BaseBotCommand
       LOGGER = Logger.new(Rails.root.join('log/redmine_2chat', 'bot-command-find-issues.log'))
       ISSUES_PER_MESSAGE = 20
@@ -26,6 +26,8 @@ module Redmine2chat::Telegram
           'me'
         when %r{/deadline|/dl}
           'deadline'
+        else
+          'me'
         end
       end
 

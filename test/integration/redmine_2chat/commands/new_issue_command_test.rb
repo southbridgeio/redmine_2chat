@@ -1,6 +1,6 @@
 require File.expand_path('../../../../test_helper', __FILE__)
 
-class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::TestCase
+class Redmine2chat::Telegram::LegacyCommands::NewIssueCommandTest < ActiveSupport::TestCase
   include Dry::Monads::Result::Mixin
 
   fixtures :projects, :trackers, :issues, :users, :email_addresses, :roles, :issue_statuses
@@ -22,10 +22,10 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
   describe '#execute' do
     it 'sends that account not found if there is no accout' do
       text = I18n.t('redmine_2chat.bot.account_not_found')
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
     end
 
     describe 'when account is present' do
@@ -36,20 +36,17 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
 
       describe 'step 1' do
         it 'sends projects available for the user' do
+          RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
           project_list = [['eCookbook', 'Private child of eCookbook'],
                           ['Child of private child', 'eCookbook Subproject 1'],
                           ['eCookbook Subproject 2', 'OnlineStore']]
 
-          Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new)
-            .with(keyboard: project_list, one_time_keyboard: true, resize_keyboard: true)
-            .returns(nil)
-
           text = I18n.t('redmine_2chat.bot.new_issue.choice_project_without_page')
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text, reply_markup: 'null')
+            .with(text, instance_of(Hash))
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
       end
 
@@ -62,6 +59,7 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
         end
 
         it 'sends list of project members if they are exist' do
+          RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
           member = Member.create(project_id: 1, user_id: 1)
           member.roles << Role.first
           member.save
@@ -70,26 +68,23 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
                       .new(command_params.merge(text: Project.first.name))
 
           users_list = [[I18n.t('redmine_2chat.bot.new_issue.without_user'), 'Redmine Admin']]
-          Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new)
-            .with(keyboard: users_list, one_time_keyboard: true, resize_keyboard: true)
-            .returns(nil)
 
           text = I18n.t('redmine_2chat.bot.new_issue.choice_user')
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text, reply_markup: 'null')
+            .with(text, instance_of(Hash))
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
 
         it 'sends message that users are not found it there is no project members' do
+          RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
           text = I18n.t('redmine_2chat.bot.new_issue.user_not_found')
-          Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text, reply_markup: 'null')
+            .with(text, reply_markup: 'default'.to_json)
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
       end
 
@@ -104,11 +99,11 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
                       .new(command_params.merge(text: 'Redmine Admin'))
 
           text = I18n.t('redmine_2chat.bot.new_issue.input_subject')
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(text)
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
       end
 
@@ -123,11 +118,11 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
                       .new(command_params.merge(text: 'issue subject'))
 
           text = I18n.t('redmine_2chat.bot.new_issue.input_text')
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(text)
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
       end
 
@@ -148,22 +143,24 @@ class Redmine2chat::Telegram::Commands::NewIssueCommandTest < ActiveSupport::Tes
         let(:url_base) { "#{Setting.protocol}://#{Setting.host_name}" }
 
         it 'sends message with link to the created issue and question to create chat' do
+          RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
           new_issue_id = Issue.last.id + 1
 
           users_list = [%w(Yes No)]
-          Telegram::Bot::Types::ReplyKeyboardMarkup.expects(:new)
-            .with(keyboard: users_list, one_time_keyboard: true, resize_keyboard: true)
-            .returns(nil)
 
           text = <<HTML
 #{I18n.t('redmine_2chat.bot.new_issue.success')} <a href="#{url_base}/issues/#{new_issue_id}">##{new_issue_id}</a>
 #{I18n.t('redmine_2chat.bot.new_issue.create_chat_question')}
 HTML
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
-            .with(text.chomp, reply_markup: 'null')
+            .with(text.chomp, reply_markup: Telegram::Bot::Types::ReplyKeyboardMarkup.new(
+              keyboard: [[I18n.t('redmine_2chat.bot.new_issue.yes_answer'),
+                          I18n.t('redmine_2chat.bot.new_issue.no_answer'), '/cancel']],
+              one_time_keyboard: true,
+              resize_keyboard: true).to_json)
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
       end
 
@@ -182,17 +179,16 @@ HTML
         end
 
         it 'creates chat for issue is user send "yes"' do
-          Telegram::Bot::Types::ReplyKeyboardRemove.expects(:new).returns(nil)
-
+          RedmineBots::Telegram.bot.stubs(:default_keyboard).returns('default')
           command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'Yes'))
 
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(
               I18n.t('redmine_2chat.bot.creating_chat'),
-              reply_markup: 'null'
+              reply_markup: 'default'.to_json
             )
-          Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+          Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
             .expects(:send_message)
             .with(
               I18n.t(
@@ -201,12 +197,12 @@ HTML
               )
             )
 
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
         end
 
         it 'hides keyborad and do nothing when user send "no"' do
           command = Telegram::Bot::Types::Message.new(command_params.merge(text: 'No'))
-          Redmine2chat::Telegram::Commands::NewIssueCommand.new(command).execute
+          Redmine2chat::Telegram::LegacyCommands::NewIssueCommand.new(command).execute
           # TODO: what we need to test here?
         end
       end

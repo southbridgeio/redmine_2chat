@@ -1,5 +1,5 @@
 module Redmine2chat::Telegram
-  module Commands
+  module LegacyCommands
     class IssueChatCommand < BaseBotCommand
       include Redmine2chat::Operations
 
