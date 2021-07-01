@@ -1,6 +1,6 @@
 require File.expand_path('../../../../test_helper', __FILE__)
 
-class Redmine2chat::Telegram::Commands::FindIssuesCommandTest < ActiveSupport::TestCase
+class Redmine2chat::Telegram::LegacyCommands::FindIssuesCommandTest < ActiveSupport::TestCase
   fixtures :projects, :trackers, :issues, :users, :issue_statuses, :roles
 
   let(:command_params) do
@@ -32,10 +32,10 @@ class Redmine2chat::Telegram::Commands::FindIssuesCommandTest < ActiveSupport::T
         <b>Assigned to you issues with recent activity:</b>
         <a href="#{url_base}/issues/1">#1</a>: Cannot print recipes
       HTML
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::FindIssuesCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::FindIssuesCommand.new(command).execute
     end
   end
 
@@ -49,10 +49,10 @@ class Redmine2chat::Telegram::Commands::FindIssuesCommandTest < ActiveSupport::T
         <b>Assigned to you issues:</b>
         <a href="#{url_base}/issues/2">#2</a>: Add ingredients categories
       HTML
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::FindIssuesCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::FindIssuesCommand.new(command).execute
     end
   end
 
@@ -67,10 +67,10 @@ class Redmine2chat::Telegram::Commands::FindIssuesCommandTest < ActiveSupport::T
         <b>Assigned to you issues with expired deadline:</b>
         <a href="#{url_base}/issues/3">#3</a>: Error 281 when updating a recipe
       HTML
-      Redmine2chat::Telegram::Commands::BaseBotCommand.any_instance
+      Redmine2chat::Telegram::LegacyCommands::BaseBotCommand.any_instance
         .expects(:send_message)
         .with(text)
-      Redmine2chat::Telegram::Commands::FindIssuesCommand.new(command).execute
+      Redmine2chat::Telegram::LegacyCommands::FindIssuesCommand.new(command).execute
     end
   end
 end
