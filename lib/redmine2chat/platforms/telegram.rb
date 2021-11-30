@@ -81,6 +81,8 @@ module Redmine2chat::Platforms
 
     def convert_link(link)
       invite_id = Addressable::URI.parse(link).request_uri.split('/').last
+      # Trim leading plus sign for compatibility with Telegram API 5.4
+      invite_id = invite_id[1..-1] if invite_id[0] == "+"
       "#{Setting.protocol}://#{Setting.host_name}/tg/#{invite_id}"
     end
   end
