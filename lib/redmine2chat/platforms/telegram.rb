@@ -28,7 +28,7 @@ module Redmine2chat::Platforms
           if user_telegram_account&.username
             RedmineBots::Telegram::Tdlib::AddToChat.(chat.id, user_telegram_account.username).then do
               RedmineBots::Telegram.bot.async.promote_chat_member(chat_id: chat.id,
-                                                                  user_id: user_telegram_account.telegram_id,
+                                                                  user_id: user_telegram_account.telegram_id.to_i,
                                                                   can_change_info: true,
                                                                   can_delete_messages: true,
                                                                   can_invite_users: true,
