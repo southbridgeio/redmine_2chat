@@ -1,5 +1,5 @@
 class ChatMessagesController < ApplicationController
-  
+  skip_before_action :check_if_login_required, only: :tg_message
 
   def index
     @issue = Issue.visible.find(params[:id])
@@ -32,6 +32,10 @@ class ChatMessagesController < ApplicationController
     @issue.init_journal(User.current, @chat_messages.as_text)
     @issue.save
     redirect_to @issue
+  end
+
+  def tg_message
+    redirect_to "https://t.me/c/#{params[:chat_id]}/#{params[:message_id]}"
   end
 
   private
