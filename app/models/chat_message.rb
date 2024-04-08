@@ -1,14 +1,12 @@
 class ChatMessage < ActiveRecord::Base
   include Redmine::I18n
 
-  
-
   default_scope {joins(issue: :project).order(sent_at: :desc)}
   scope :reverse_scope, -> {unscope(:order).order('sent_at ASC')}
 
   belongs_to :issue_chat
 
-  has_one :issue, through: :issue_chat
+  has_one :issue, through: :issue_chat, dependent: :destroy
 
   acts_as_searchable columns: %w[message first_name last_name username],
                      project_key: "#{Project.table_name}.id",
