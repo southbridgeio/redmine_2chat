@@ -1,3 +1,7 @@
+# 0.4.1
+
+* Adapt tdlib commands for new version
+
 # 0.4.0
 
 * Fix USER_NOT_PARTICIPANT error
