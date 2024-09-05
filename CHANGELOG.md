@@ -1,3 +1,8 @@
+# 0.4.2
+
+* Fix set admin permissions
+* Refactor commands
+
 # 0.4.1
 
 * Adapt tdlib commands for new version
