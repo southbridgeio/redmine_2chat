@@ -1,3 +1,7 @@
+# 0.4.3
+
+* Fix kick locked users
+
 # 0.4.2
 
 * Fix set admin permissions
