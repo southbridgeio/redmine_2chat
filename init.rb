@@ -5,12 +5,16 @@ FileUtils.mkdir_p(log_dir) unless Dir.exist?(log_dir)
 FileUtils.mkdir_p(tmp_dir) unless Dir.exist?(tmp_dir)
 
 require_dependency Rails.root.join('plugins','redmine_bots', 'init')
-require 'redmine2chat'
 require 'dry/monads/result'
 
-# Rails 5.1/Rails 4
-reloader = defined?(ActiveSupport::Reloader) ? ActiveSupport::Reloader : ActionDispatch::Reloader
-reloader.to_prepare do
+register_after_redmine_initialize_proc =
+  if Redmine::VERSION::MAJOR >= 5
+    Rails.application.config.public_method(:after_initialize)
+  else
+    reloader = defined?(ActiveSupport::Reloader) ? ActiveSupport::Reloader : ActionDispatch::Reloader
+    reloader.public_method(:to_prepare)
+  end
+register_after_redmine_initialize_proc.call do
   paths = '/lib/redmine2chat/{patches/*_patch,hooks/*_hook,operations/*}.rb'
 
   Dir.glob(File.dirname(__FILE__) + paths).each do |file|

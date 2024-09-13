@@ -1,5 +1,3 @@
-require_dependency 'telegram_account'
-
 module Redmine2chat::Telegram::Tdlib
   class KickLockedUsers < RedmineBots::Telegram::Tdlib::Command
     def call
@@ -16,7 +14,14 @@ module Redmine2chat::Telegram::Tdlib
 
         promises = IssueChat.active.where(platform_name: 'telegram').where.not(im_id: nil).map do |group|
           client.get_chat(chat_id: group.im_id).then do |chat|
-            client.get_basic_group_full_info(basic_group_id: chat.type.basic_group_id)
+            case chat.type
+            when TD::Types::ChatType::Supergroup
+              client.get_supergroup_members(supergroup_id: chat.type.supergroup_id, filter: nil, offset: 0, limit: 100)
+            when TD::Types::ChatType::BasicGroup
+              client.get_basic_group_full_info(basic_group_id: chat.type.basic_group_id)
+            else
+              # do nothing
+            end
           end.flat.rescue { nil }.then do |group_info|
             next Promises.fulfilled_future(true) if group_info.blank?
 

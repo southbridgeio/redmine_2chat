@@ -1,3 +1,8 @@
+# 0.4.5
+
+* Add compatibility with Redmine 5.1
+* Add kick locked users to supergroups
+
 # 0.4.4
 
 * Add functionality for processing photos from telegram
