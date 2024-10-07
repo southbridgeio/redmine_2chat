@@ -1,3 +1,7 @@
+# 0.4.4
+
+* Add functionality for processing photos from telegram
+
 # 0.4.3
 
 * Fix kick locked users

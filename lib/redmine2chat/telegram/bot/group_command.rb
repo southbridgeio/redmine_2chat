@@ -81,7 +81,7 @@ module Redmine2chat::Telegram
             change_issue
           end
 
-        elsif command.text.present?
+        elsif command.text.present? || command.caption.present?
           save_message
         end
       end
@@ -224,7 +224,7 @@ module Redmine2chat::Telegram
       end
 
       def save_message
-        message.message = command.text
+        message.message = command.text || command.caption
         message.is_system = false
         message.save!
       end
