@@ -17,6 +17,9 @@ class IssueChatAutoCloseWorker
   def need_to_notify_issues
     issues = Issue.joins(:chats)
                   .where('issue_chats.last_notification_at <= ?', 24.hours.ago.change(min: 59, sec: 59))
+                  .where(
+                    issue_chats: { need_to_close_at: (1.day.from_now.beginning_of_day..2.days.from_now.end_of_day) }
+                  )
 
     if close_issue_status_ids.present?
       issues = issues.where(status_id: close_issue_status_ids)
