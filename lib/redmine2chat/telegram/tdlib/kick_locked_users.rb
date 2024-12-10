@@ -26,7 +26,15 @@ module Redmine2chat::Telegram::Tdlib
             next Promises.fulfilled_future(true) if group_info.blank?
 
             accounts = message_senders.select { |account| account.in?(group_info.members.map(&:member_id)) }
-            Promises.zip(*accounts.map { |account| kick_member(group.im_id, account) })
+            Promises.zip(*accounts.map do |account|
+              kick_member(group.im_id, account).then do |result|
+                if result.is_a?(TD::Types::Ok)
+                  TelegramAccount.find_by(telegram_id: account.user_id)&.destroy
+                  RedmineTwoFa::TelegramConnection.find_by(telegram_id: account.user_id)&.destroy
+                end
+              end
+            end
+            )
           end.flat
         end
 
