@@ -6,13 +6,15 @@ module Redmine2chat::Patches
         has_many :chat_messages, through: :chats, source: :messages
         has_one :active_chat, -> { active }, class_name: 'IssueChat'
 
-        before_save :set_need_to_close, :reset_need_to_close
+        before_save :set_need_to_close_and_notify, :reset_need_to_close
 
-        def set_need_to_close
+        def set_need_to_close_and_notify
           if closing? && active_chat.present?
-            active_chat.update need_to_close_at: 2.weeks.from_now,
-                        last_notification_at: (1.week.from_now - 12.hours)
+            active_chat.update need_to_close_at: 1.week.from_now,
+                        last_notification_at: 4.days.from_now
 
+            # Delay for the data to be saved in the database
+            IssueChatCloseNotificationWorker.perform_in(5.seconds, id)
           end
         end
 
