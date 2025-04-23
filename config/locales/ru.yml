@@ -13,6 +13,13 @@ ru:
       command_canceled: Команда отменена.
       command_not_found: Команда не найдена.
       private:
+        become_chat_admin:
+          chat_not_found: Чат не существует.
+          chat_inactive: Чат неактивен.
+          user_has_not_permissions: У вас недостаточно прав, чтобы стать администратором в этом чате.
+          command_arguments_blank: "Введите ссылку на приглашение в чат из задачи через пробел от команды. Например: <pre>/become_chat_admin https://factory.southbridge.io/tg/random_string</pre>"
+          success: Вы успешно стали администратором чата.
+          fail: Telegram отправил сообщение об ошибке
         help:
           start: Начало работы с ботом.
           connect: Связать аккаунты Telegram и Redmine.
@@ -31,6 +38,7 @@ ru:
           issue: Алиас для /task.
           ih: Алиас для /issue hot.
           th: Алиас для /task hot.
+          become_chat_admin: "Стать администратором в чате по ссылке на приглашение из задачи. Например: <code>/become_chat_admin https://factory.southbridge.io/tg/random_string</code>"
       group:
         help:
           task: Получить ссылку на задачу.

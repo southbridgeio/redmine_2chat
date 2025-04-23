@@ -30,7 +30,7 @@ register_after_redmine_initialize_proc.call do
                                             Redmine2chat::Platforms::Slack::Commands::Spent,
                                             Redmine2chat::Platforms::Slack::Commands::Yspent
 
-  %w[new hot me deadline dl spent yspent last chat task issue ih th].each do |command|
+  %w[new hot me deadline dl spent yspent last chat task issue ih th become_chat_admin].each do |command|
     RedmineBots::Telegram.bot.register_handler(Redmine2chat::Telegram::Handlers::PrivateLegacyCommand.new(command))
   end
 

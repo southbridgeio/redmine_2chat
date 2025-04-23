@@ -135,19 +135,25 @@ module Redmine2chat::Telegram
 
       def can_manage_chat?(telegram_user)
         telegram_account = TelegramAccount.find_by(telegram_id: telegram_user.id)
-        telegram_account && telegram_account.user && telegram_account.user.allowed_to?(:manage_chat, issue.project)
+        user = telegram_account&.user
+        user && user.allowed_to?(:manage_chat, issue.project)
       end
 
       def edit_group_admin(telegram_user)
         return unless issue.active_chat
-        RedmineBots::Telegram.bot.async.promote_chat_member(chat_id: command.chat.id,
-                                                            user_id: telegram_user.id,
-                                                            can_change_info: true,
-                                                            can_delete_messages: true,
-                                                            can_invite_users: true,
-                                                            can_restrict_members: true,
-                                                            can_pin_messages: true,
-                                                            can_promote_members: true
+
+        RedmineBots::Telegram.bot.promote_chat_member(chat_id: command.chat.id,
+                                                      user_id: telegram_user.id,
+                                                      can_manage_chat: true,
+                                                      can_change_info: true,
+                                                      can_delete_messages: true,
+                                                      can_invite_users: true,
+                                                      can_restrict_members: true,
+                                                      can_pin_messages: true,
+                                                      can_manage_topics: true,
+                                                      can_promote_members: true,
+                                                      can_manage_video_chats: true,
+                                                      is_anonymous: false
         )
       end
 
