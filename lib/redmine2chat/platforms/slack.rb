@@ -2,7 +2,7 @@ module Redmine2chat::Platforms
   class Slack
     include Dry::Monads::Result::Mixin
 
-    def create_chat(title)
+    def create_chat(title, issue)
       channel = robot_client.channels_create(name: title).channel
       team = robot_client.team_info.team
       bot_id = bot_client.auth_test.user_id

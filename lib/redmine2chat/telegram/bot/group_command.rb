@@ -117,6 +117,8 @@ module Redmine2chat::Telegram
       end
 
       def new_chat_members
+        Rails.logger.info("Message: #{message.inspect}")
+        Rails.logger.info("Command: #{command.inspect}")
         new_chat_members = command.new_chat_members
 
         if command.from.id == new_chat_members.first.id
@@ -126,6 +128,7 @@ module Redmine2chat::Telegram
         end
 
         new_chat_members.each do |new_chat_member|
+          Rails.logger.info(can_manage_chat?(new_chat_member))
           edit_group_admin(new_chat_member) if can_manage_chat?(new_chat_member)
         end
         message.system_data = new_chat_members.map { |new_chat_member| chat_user_full_name(new_chat_member) }.join(', ')
@@ -135,7 +138,8 @@ module Redmine2chat::Telegram
 
       def can_manage_chat?(telegram_user)
         telegram_account = TelegramAccount.find_by(telegram_id: telegram_user.id)
-        telegram_account && telegram_account.user && telegram_account.user.allowed_to?(:manage_chat, issue.project)
+        user = telegram_account&.user
+        user && user.allowed_to?(:manage_chat, issue.project)
       end
 
       def edit_group_admin(telegram_user)
