@@ -24,7 +24,7 @@ module Redmine2chat::Telegram
           send_message(I18n.t("redmine_2chat.bot.private.become_chat_admin.chat_not_found"))
         elsif chat.inactive?
           send_message(I18n.t("redmine_2chat.bot.private.become_chat_admin.chat_inactive"))
-        elsif user_can_not_manage_chat?
+        elsif user_can_not_manage_chat?(project: chat.issue.project)
           send_message(I18n.t("redmine_2chat.bot.private.become_chat_admin.user_has_not_permissions"))
         else
           begin
@@ -62,8 +62,8 @@ module Redmine2chat::Telegram
         end
       end
 
-      def user_can_not_manage_chat?
-        !account.user.allowed_to?(:manage_chat, chat.issue.project)
+      def user_can_not_manage_chat?(project:)
+        !account.user.allowed_to?(:manage_chat, project)
       end
     end
   end
