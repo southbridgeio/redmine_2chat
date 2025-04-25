@@ -16,7 +16,7 @@ module Redmine2chat::Platforms
       '/plugin_assets/redmine_2chat/images/telegram-inactive-icon.png'
     end
 
-    def create_chat(title)
+    def create_chat(title, issue)
       current_user = User.current
       user_telegram_account = current_user.telegram_account
       bot_id = Setting.find_by_name(:plugin_redmine_bots).value['telegram_bot_id'].presence
@@ -27,19 +27,21 @@ module Redmine2chat::Platforms
 
           if user_telegram_account&.username
             RedmineBots::Telegram::Tdlib::AddToChat.(chat.id, user_telegram_account.username).then do
-              RedmineBots::Telegram.bot.promote_chat_member(chat_id: chat.id,
-                                                            user_id: user_telegram_account.telegram_id.to_i,
-                                                            can_manage_chat: true,
-                                                            can_change_info: true,
-                                                            can_delete_messages: true,
-                                                            can_invite_users: true,
-                                                            can_restrict_members: true,
-                                                            can_pin_messages: true,
-                                                            can_manage_topics: true,
-                                                            can_promote_members: true,
-                                                            can_manage_video_chats: true,
-                                                            is_anonymous: false
-              )
+              if current_user.allowed_to?(:manage_chat, issue.project)
+                RedmineBots::Telegram.bot.promote_chat_member(chat_id: chat.id,
+                                                              user_id: user_telegram_account.telegram_id.to_i,
+                                                              can_manage_chat: true,
+                                                              can_change_info: true,
+                                                              can_delete_messages: true,
+                                                              can_invite_users: true,
+                                                              can_restrict_members: true,
+                                                              can_pin_messages: true,
+                                                              can_manage_topics: true,
+                                                              can_promote_members: true,
+                                                              can_manage_video_chats: true,
+                                                              is_anonymous: false
+                )
+              end
             end
           end
 

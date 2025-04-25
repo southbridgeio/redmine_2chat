@@ -55,6 +55,10 @@ module Redmine2chat::Telegram
         Redmine2chat::Telegram::LegacyCommands::EditIssueCommand.new(command).execute
       end
 
+      def execute_command_become_chat_admin
+        Redmine2chat::Telegram::LegacyCommands::BecomeChatAdmin.new(command).execute
+      end
+
       alias execute_command_task execute_command_issue
 
       def execute_command_ih

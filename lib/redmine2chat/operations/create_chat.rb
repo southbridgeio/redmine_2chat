@@ -6,7 +6,7 @@ module Redmine2chat::Operations
 
     def call
       title = "#{@issue.project.name} #{@issue.id}"
-      Redmine2chat.active_platform.create_chat(title).fmap do |result|
+      Redmine2chat.active_platform.create_chat(title, @issue).fmap do |result|
         Issue.transaction do
           im_id, chat_url = result.values_at(:im_id, :chat_url)
           attributes = {
