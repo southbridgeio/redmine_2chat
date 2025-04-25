@@ -12,4 +12,8 @@ class IssueChat < ActiveRecord::Base
   def platform
     Redmine2chat.platforms[platform_name]
   end
+
+  def inactive?
+    !active
+  end
 end

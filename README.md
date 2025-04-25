@@ -74,6 +74,7 @@ link - Get link to the issue.
 url - Get link to the issue.
 log - Save message to the issue.
 issue - Change issues.
+become_chat_admin - Become admin in chat by invite link
 ```
 
 ### Slack

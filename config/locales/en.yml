@@ -13,6 +13,13 @@ en:
       command_canceled: Command was canceled.
       command_not_found: Command not found.
       private:
+        become_chat_admin:
+          chat_not_found: Chat not found.
+          chat_inactive: Chat inactive.
+          user_has_not_permissions: You do not have sufficient rights to become an administrator in this chat.
+          command_arguments_blank: "Enter the chat invitation link from the issue separated by a space from the command. For example: <pre>/become_chat_admin https://factory.southbridge.io/tg/random_string</pre>"
+          success: You have successfully become a chat administrator.
+          fail: Telegram sent an error message
         help:
           start: Start work with bot.
           connect: Connect account to Redmine.
@@ -31,6 +38,7 @@ en:
           issue: Alias for /task.
           ih: Alias for /issue hot.
           th: Alias for /task hot.
+          become_chat_admin: "Become an administrator in a chat using the invitation link from the task. For example: <code>/become_chat_admin https://factory.southbridge.io/tg/random_string</code>"
       group:
         help:
           task: Get link to the issue.
