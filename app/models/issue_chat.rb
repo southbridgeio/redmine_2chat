@@ -1,4 +1,4 @@
-class IssueChat < ActiveRecord::Base
+class IssueChat < ApplicationRecord
   belongs_to :issue
 
   has_many :messages, class_name: 'ChatMessage'

@@ -1,12 +1,12 @@
 namespace :redmine_2chat do
   task migrate_from_chat_telegram: :environment do
-    class TelegramCommonAccount < ActiveRecord::Base
+    class TelegramCommonAccount < ApplicationRecord
     end
 
-    class TelegramMessage < ActiveRecord::Base
+    class TelegramMessage < ApplicationRecord
     end
 
-    class RedmineChatTelegramTelegramGroup < ActiveRecord::Base
+    class RedmineChatTelegramTelegramGroup < ApplicationRecord
       belongs_to :issue
     end
 
