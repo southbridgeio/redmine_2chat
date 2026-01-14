@@ -14,13 +14,13 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     Issue.find(1).update(status_id: @opened_status.id)
     Issue.find(2).update(status_id: @closed_status.id)
 
-    @telegram_group = IssueChat.create(need_to_close_at: 1.day.ago,
-                                                                last_notification_at: 1.day.ago,
+    @telegram_group = IssueChat.create(need_to_close_at: 1.day.from_now,
+                                                                last_notification_at: 2.days.ago,
                                                                 im_id: 123,
                                                                 platform_name: 'telegram',
                                                                 issue_id: 1)
-    @another_telegram_group = IssueChat.create(need_to_close_at: 1.day.ago,
-                                                                        last_notification_at: 1.day.ago,
+    @another_telegram_group = IssueChat.create(need_to_close_at: 1.day.from_now,
+                                                                        last_notification_at: 2.days.ago,
                                                                         im_id: 456,
                                                                         platform_name: 'telegram',
                                                                         issue_id: 2)
@@ -32,6 +32,12 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'closes groups only for issues with required statuses' do
+      IssueChat.create(need_to_close_at: 1.day.ago,
+                       last_notification_at: 2.days.ago,
+                       im_id: 789,
+                       platform_name: 'telegram',
+                       issue_id: 1)
+
       mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
 
       Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
@@ -57,6 +63,12 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'close groups only for issues with required statuses' do
+      IssueChat.create(need_to_close_at: 1.day.ago,
+                       last_notification_at: 2.days.ago,
+                       im_id: 890,
+                       platform_name: 'telegram',
+                       issue_id: 2)
+
       mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
 
       Redmine2chat::Operations::CloseChat.stub :call, mock_worker do

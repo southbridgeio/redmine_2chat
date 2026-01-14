@@ -129,7 +129,9 @@ class Redmine2chat::Telegram::LegacyCommands::NewIssueCommandTest < ActiveSuppor
       describe 'step 5' do
         before do
           IssuePriority.create(is_default: true, name: 'normal')
-          Project.find(1).trackers << Tracker.first
+          project = Project.find(1)
+          tracker = Tracker.first
+          project.trackers << tracker unless project.trackers.include?(tracker)
           TelegramExecutingCommand.create(
             account: @account,
             name: 'new',
@@ -167,7 +169,9 @@ HTML
       describe 'step 6' do
         before do
           IssuePriority.create(is_default: true, name: 'normal')
-          Project.find(1).trackers << Tracker.first
+          project = Project.find(1)
+          tracker = Tracker.first
+          project.trackers << tracker unless project.trackers.include?(tracker)
           TelegramExecutingCommand
             .create(account: @account, data: { issue_id: 1 }, name: 'new').update(step_number: 6)
         end

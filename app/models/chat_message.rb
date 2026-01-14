@@ -1,4 +1,4 @@
-class ChatMessage < ActiveRecord::Base
+class ChatMessage < ApplicationRecord
   include Redmine::I18n
 
   default_scope {joins(issue: :project).order(sent_at: :desc)}

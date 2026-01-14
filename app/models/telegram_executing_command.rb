@@ -1,4 +1,4 @@
-class TelegramExecutingCommand < ActiveRecord::Base
+class TelegramExecutingCommand < ApplicationRecord
   serialize :data
 
   belongs_to :account, class_name: 'TelegramAccount'

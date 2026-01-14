@@ -9,11 +9,11 @@ module Redmine2chat::Platforms
     end
 
     def icon_path
-      '/plugin_assets/redmine_2chat/images/telegram-icon.png'
+      'plugin_assets/redmine_2chat/telegram-icon.png'
     end
 
     def inactive_icon_path
-      '/plugin_assets/redmine_2chat/images/telegram-inactive-icon.png'
+      'plugin_assets/redmine_2chat/telegram-inactive-icon.png'
     end
 
     def create_chat(title, issue)

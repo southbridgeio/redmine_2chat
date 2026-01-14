@@ -19,7 +19,6 @@ class Redmine2chat::Telegram::LegacyCommands::EditIssueCommandTest < ActiveSuppo
 
   before do
     account
-    Member.create!(project_id: 2, principal: user, role_ids: [1])
   end
 
   describe 'step 1' do

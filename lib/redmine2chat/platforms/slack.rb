@@ -24,11 +24,11 @@ module Redmine2chat::Platforms
     end
 
     def icon_path
-      '/plugin_assets/redmine_2chat/images/slack-icon.png'
+      'plugin_assets/redmine_2chat/slack-icon.png'
     end
 
     def inactive_icon_path
-      '/plugin_assets/redmine_2chat/images/slack-inactive-icon.png'
+      'plugin_assets/redmine_2chat/slack-inactive-icon.png'
     end
 
     private
