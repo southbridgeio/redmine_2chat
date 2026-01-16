@@ -84,6 +84,8 @@ Redmine::Plugin.register :redmine_2chat do
 end
 
 # Eager load throttled workers for Sidekiq Web UI
-Rails.application.config.after_initialize do
-  require_dependency 'issue_chat_message_sender_worker' rescue nil
+unless Rails.env.test?
+  Rails.application.config.after_initialize do
+    require_dependency 'issue_chat_message_sender_worker' rescue nil
+  end
 end
