@@ -157,3 +157,7 @@
 .user-bgcolor-8{
   background: #fba76f;
 }
+
+.issue-chat-links { text-align: right; }
+.issue-chat-links .issue-chat-link { white-space: nowrap; line-height: 1.6em; }
+.issue-chat-links .issue-chat-link img { vertical-align: middle; }

@@ -23,10 +23,23 @@
 
 <p>
   <label>
-    <%= t 'redmine_2chat.settings.active_platform' %>
+    <%= t 'redmine_2chat.settings.active_platforms' %>
   </label>
-  <%= select_tag 'settings[active_platform]', options_for_select(Redmine2chat.platforms.keys.map { |p| [p.titleize, p] }, @settings['active_platform']) %>
+  <%# submitted so that clearing the selection actually stores an empty list %>
+  <%= hidden_field_tag 'settings[active_platforms][]', '' %>
+  <%= select_tag 'settings[active_platforms]',
+                 options_for_select(Redmine2chat.platforms.map { |name, platform| [platform.title, name] },
+                                    Redmine2chat.active_platform_names),
+                 multiple: true, size: Redmine2chat.platforms.size %>
+  <em class="info"><%= t 'redmine_2chat.settings.active_platforms_hint' %></em>
 </p>
+
+<% unavailable = Redmine2chat.active_platforms.reject(&:available?) %>
+<% if unavailable.any? %>
+  <p class="warning">
+    <%= t 'redmine_2chat.settings.platform_not_configured', platforms: unavailable.map(&:title).join(', ') %>
+  </p>
+<% end %>
 
 <p>
   <label>

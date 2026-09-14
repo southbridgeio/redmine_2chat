@@ -6,9 +6,9 @@ module Redmine2chat
 
         issue = context[:issue]
 
-        return unless issue_chat = issue.active_chat
-
-        IssueChatNotificationsWorker.perform_async(issue_chat.im_id, issue_chat.platform_name, context[:journal].id)
+        issue.active_chats.each do |issue_chat|
+          IssueChatNotificationsWorker.perform_async(issue_chat.im_id, issue_chat.platform_name, context[:journal].id)
+        end
       end
     end
   end

@@ -7,7 +7,7 @@ This plugin is used to create group chats in instant messengers.
 
 The `redmine_2chat` can be used to create a group chat associated with an issue and record its logs to the Redmine archive. Associated group chats can be easily created via the `Create <Platform name> chat` link on the ticket page. You can copy the link and pass it to anyone you want to join this chat.
 
-There're currently Telegram and Slack supported to create chats in. You can also create your own platform adapter and register it.
+There're currently Telegram, Yandex Messenger and Slack supported to create chats in. Several platforms can be enabled at the same time — an issue then holds one chat per platform, each with its own link. You can also create your own platform adapter and register it.
 
 Please help us make this plugin better telling us of any [issues](https://github.com/southbridgeio/redmine_2сhat/issues) you'll face using it. We are ready to answer all your questions regarding this plugin.
 
@@ -77,6 +77,61 @@ issue - Change issues.
 become_chat_admin - Become admin in chat by invite link
 ```
 
+### Yandex Messenger
+
+The Yandex Messenger integration talks to the [Bot API](https://yandex.ru/dev/messenger/doc/ru/)
+of Yandex 360 for Business. There is no userbot involved: the bot itself creates the chat and
+becomes its administrator.
+
+* Create a bot and issue its OAuth token at [admin.yandex.ru/bot-platform](https://admin.yandex.ru/bot-platform).
+* Put the token into *Administration → Plugins → Redmine Bots → Yandex Messenger → OAuth bot token*.
+* Enable `Yandex Messenger` in *Administration → Plugins → Redmine 2Chat → Active platforms*.
+* Point the bot at this instance: `rake redmine_bots:yandex:set_webhook` (needs a public HTTPS host).
+* Ask people to link their Yandex 360 account — see below.
+
+Yandex 360 addresses people by login rather than by a numeric id, so every participant needs their
+account linked. `redmine_bots` stores that binding in `YandexAccount` and offers two ways to create
+it:
+
+* **through the bot (preferred)** — a user sends `/connect` to it in a private chat and follows the
+  one-time link back to Redmine. The login is asserted by Yandex, the Redmine user comes from the
+  session, so neither side is self-declared; such a binding is marked verified.
+* **by hand** — the *Yandex 360 login* field on *My account* (and on the admin user form). Handy for
+  filling someone in ahead of time, but nothing checks it, so it stays unverified.
+
+The field only shows up while a bot token is set. The Redmine e-mail is deliberately **not** used as
+a fallback — a coincidental address match must never pull the wrong person into a chat — so a user
+without a binding simply is not added to the chat.
+
+Chats are created with `public: true`, so the stored link is a Yandex invite link. That link is the
+only way somebody can join on their own: the bot itself can only add people it resolves in the
+organization directory. Two things follow. The API offers no way to revoke the link, so closing a
+chat evicts its members but cannot keep out someone who kept the link — and the link lives on in the
+issue journal. And the link does **not** help outsiders: a person outside the organization is
+refused by it just as the bot refuses to add them.
+
+The issue creator (as an administrator, when they hold the `manage_chat` permission), the assignee
+and the author are added as members — those of them with a linked Yandex 360 account. Every omission
+is logged with its reason.
+
+People from outside the organization need an extra step that has no API: an administrator has to add
+them as a **guest** of the organization (*Общие контакты и гости → Гости* in the Yandex 360 admin
+panel). A contact invited through Messenger's own "Пригласить в Мессенджер" is not enough — the bot
+cannot see them at all. Note also that a guest's login is not their e-mail
+(`ivan.petrov@yandex.ru` becomes `ivan-petrov`), so linking through the bot's `/connect` — which
+takes the login straight from the webhook — is far more reliable than typing it by hand.
+
+Two limitations come from the API itself:
+
+* a bot can only add members of its own organization, and **one login it cannot resolve rejects the
+  whole request**, so a participant from outside the organization fails the chat creation entirely;
+* there is no archive/delete chat method — closing a chat posts the closing message and removes
+  every non-bot member. The chat itself and its history remain, visible to the bot only.
+
+Closing gives up rather than retrying forever: after `CloseChat::MAX_ATTEMPTS` failures the chat is
+marked closed in Redmine alone and the issue journal records that the platform never confirmed it,
+along with the last error.
+
 ### Slack
 
 * Make sure you're done with configuring Slack in [redmine_bots](https://github.com/southbridgeio/redmine_bots).
@@ -111,32 +166,32 @@ Access information about your workspace
 team:read
 ```
 
-* Select Slack as active platform on plugin settings page.
+* Enable Slack in the *Active platforms* setting on the plugin settings page.
 
 ## Custom platform adapters
 
 You can create and register custom platform adapter by implementing simple contract:
 
 ```ruby
-class ICQ # :)
-  def create_chat(title)
+class ICQ < Redmine2chat::Platforms::Base # :)
+  # @return [Success({ im_id:, chat_url: })] or [Failure(String)]
+  def create_chat(title, issue)
     # needs to be implemented
   end
 
+  # @return [Success] or [Failure(String)]
   def close_chat(im_id, message)
     # needs to be implemented
   end
 
-  def send_message(im_id, message)
+  # `message` arrives as Telegram-flavoured HTML
+  def send_message(im_id, message, params = {})
     # needs to be implemented
   end
 
-  def icon_path
-    # needs to be implemented
-  end
-
-  def inactive_icon_path
-    # needs to be implemented
+  # whether the platform is configured well enough to be offered
+  def available?
+    true
   end
 end
 
@@ -144,7 +199,11 @@ Redmine2chat.register_platform('icq', ICQ.new)
 
 ````
 
-Then, you can select it in on plugin settings page.
+`Redmine2chat::Platforms::Base` derives `platform_name`, `title`, `icon_path` and
+`inactive_icon_path` from the class name, so dropping `icq-icon.png` and `icq-inactive-icon.png`
+into `assets/images` is enough; override the methods to change any of them.
+
+Then, you can enable it in the *Active platforms* setting on the plugin settings page.
 
 # Author of the Plugin
 
