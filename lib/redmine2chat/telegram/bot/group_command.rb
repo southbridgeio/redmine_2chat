@@ -97,8 +97,13 @@ module Redmine2chat::Telegram
         end
       end
 
+      def telegram_chat
+        @telegram_chat ||= issue.chats.on_platform('telegram').find_by(im_id: command.chat.id) ||
+                           issue.active_chat_for('telegram')
+      end
+
       def init_message
-        @message = ::ChatMessage.where(im_id: command.message_id, issue_chat_id: issue.chats.last.id).first_or_initialize(
+        @message = ::ChatMessage.where(im_id: command.message_id, issue_chat_id: telegram_chat&.id).first_or_initialize(
           sent_at: Time.at(command.date),
           im_id: command.from.id,
           first_name: command.from.first_name,
@@ -140,7 +145,7 @@ module Redmine2chat::Telegram
       end
 
       def edit_group_admin(telegram_user)
-        return unless issue.active_chat
+        return unless telegram_chat
 
         RedmineBots::Telegram.bot.promote_chat_member(chat_id: command.chat.id,
                                                       user_id: telegram_user.id,
@@ -214,9 +219,9 @@ module Redmine2chat::Telegram
 
       def change_issue_chat_name(name)
         if name.present?
-          RedmineBots::Telegram::Tdlib::RenameChat.(issue.active_chat.im_id, name)
+          RedmineBots::Telegram::Tdlib::RenameChat.(telegram_chat.im_id, name)
         else
-          chat_info = get_chat.(issue.active_chat.im_id)
+          chat_info = get_chat.(telegram_chat.im_id)
           send_message(chat_info['title'].to_s)
         end
       end

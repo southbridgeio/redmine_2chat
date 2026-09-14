@@ -25,11 +25,11 @@ module Redmine2chat::Telegram
           creating_chat_message = I18n.t('redmine_2chat.bot.creating_chat')
           send_message(creating_chat_message)
 
-          CreateChat.(issue)
+          CreateChat.(issue, 'telegram')
 
           issue.reload
           message_text = I18n.t('redmine_2chat.journal.chat_was_created',
-                                chat_url: issue.active_chat.shared_url)
+                                chat_url: issue.active_chat_for('telegram')&.shared_url)
           send_message(message_text)
         else
           access_denied
@@ -38,7 +38,7 @@ module Redmine2chat::Telegram
 
       def close_issue_chat
         if account.user.allowed_to?(:close_chat, issue.project)
-          CloseChat.(issue)
+          CloseChat.(issue, 'telegram')
           message_text = I18n.t('redmine_2chat.bot.chat.destroyed')
           send_message(message_text)
         else
@@ -52,7 +52,7 @@ module Redmine2chat::Telegram
           return
         end
 
-        chat = issue.active_chat
+        chat = issue.active_chat_for('telegram')
         if chat.present?
           send_message(chat.shared_url)
         else

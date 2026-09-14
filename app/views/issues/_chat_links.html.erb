@@ -1,35 +1,42 @@
 <% if @project.module_enabled?(:redmine_2chat) %>
-  <div id="telegram-links" style="float: right;">
-    <% if @issue.active_chat.present? && @issue.active_chat.shared_url.present? %>
-      <% if User.current.allowed_to?(:view_chat_link, @issue.project) %>
-        <%= link_to @issue.active_chat.shared_url, target: '_blank' do %>
-          <%= image_tag @issue.active_chat.platform.icon_path %>
-          <%= t 'redmine_2chat.link.enter_chat', platform: @issue.active_chat.platform_name.titleize %>
-        <% end %>
-      <% end %>
+  <% active_chats = @issue.active_chats.select { |chat| chat.shared_url.present? } %>
+  <% creatable_platforms = Redmine2chat.available_platforms.reject { |p| @issue.active_chat_for(p.platform_name) } %>
 
-      <% if User.current.allowed_to?(:close_chat, @issue.project) %>
-        | <%= link_to t('redmine_2chat.link.close_chat'), issue_chat_path(@issue.id),
-                      method: :delete, data: { confirm: l(:text_are_you_sure) } %>
-      <% end %>
-
-    <% else %>
-      <% if User.current.allowed_to?(:create_chat, @project) && !@issue.closed? %>
-        <%= link_to issue_chats_path(issue_id: @issue.id), method: :post, remote: true do %>
-          <%= image_tag Redmine2chat.active_platform.inactive_icon_path %>
-          <%= t 'redmine_2chat.link.create_chat', platform: Setting.plugin_redmine_2chat['active_platform'].titleize %>
+  <div id="telegram-links" class="issue-chat-links" style="float: right;">
+    <% active_chats.each do |chat| %>
+      <div class="issue-chat-link">
+        <% if User.current.allowed_to?(:view_chat_link, @issue.project) %>
+          <%= link_to chat.shared_url, target: '_blank' do %>
+            <%= image_tag chat.platform.icon_path %>
+            <%= t 'redmine_2chat.link.enter_chat', platform: chat.platform_title %>
+          <% end %>
         <% end %>
+
+        <% if User.current.allowed_to?(:close_chat, @issue.project) %>
+          | <%= link_to t('redmine_2chat.link.close_chat'),
+                        issue_chat_path(@issue.id, platform: chat.platform_name),
+                        method: :delete, data: { confirm: l(:text_are_you_sure) } %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if User.current.allowed_to?(:create_chat, @project) && !@issue.closed? %>
+      <% creatable_platforms.each do |platform| %>
+        <div class="issue-chat-link">
+          <%= link_to issue_chats_path(issue_id: @issue.id, platform: platform.platform_name),
+                      method: :post, remote: true do %>
+            <%= image_tag platform.inactive_icon_path %>
+            <%= t 'redmine_2chat.link.create_chat', platform: platform.title %>
+          <% end %>
+        </div>
       <% end %>
     <% end %>
 
     <% if User.current.allowed_to?(:view_chat_archive, @issue.project) && @issue.chat_messages.present? %>
-      <% if !@issue.closed? || User.current.allowed_to?(:close_chat, @issue.project) %>
-        |
-      <% end %>
-      <%= link_to t('redmine_2chat.link.archive'), issue_chat_messages_path(@issue.id), remote: true %>
+      <div class="issue-chat-link">
+        <%= link_to t('redmine_2chat.link.archive'), issue_chat_messages_path(@issue.id), remote: true %>
+      </div>
     <% end %>
-
   </div>
   <div style="clear:both;"></div>
 <% end %>
-

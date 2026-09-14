@@ -3,23 +3,31 @@ class IssueChatCloseNotificationWorker
   include ActionView::Helpers::DateHelper
   include ApplicationHelper
 
-  def perform(issue_id)
+  # An issue may have one open chat per platform, so every active chat gets its
+  # own notification. `issue_chat_id` narrows it down to a single chat.
+  def perform(issue_id, issue_chat_id = nil)
     I18n.locale = Setting['default_language']
 
     @issue = Issue.find_by id: issue_id
 
     return unless issue.present?
-    return unless issue_chat.present?
 
-    if issue_chat.im_id.present?
-      send_chat_notification
-      issue_chat.update last_notification_at: Time.now
-    end
+    chats = issue_chat_id ? issue.chats.where(id: issue_chat_id).to_a : issue.active_chats.to_a
+
+    chats.each { |chat| notify(chat) }
   end
 
   private
 
-  attr_reader :issue
+  attr_reader :issue, :issue_chat
+
+  def notify(chat)
+    return if chat.im_id.blank? || chat.need_to_close_at.blank?
+
+    @issue_chat = chat
+    send_chat_notification
+    chat.update last_notification_at: Time.now
+  end
 
   def send_chat_notification
     im_id = issue_chat.im_id
@@ -75,10 +83,6 @@ class IssueChatCloseNotificationWorker
 
   def days_count
     issue_chat.need_to_close_at.to_date.mjd - Date.today.mjd
-  end
-
-  def issue_chat
-    @issue_chat ||= issue.active_chat
   end
 
   def logger

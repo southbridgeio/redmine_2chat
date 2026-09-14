@@ -9,6 +9,13 @@ class IssueChatMessageSenderWorker
   )
 
   def perform(im_id, platform_name, message, params = {})
-    Redmine2chat.platforms[platform_name].send_message(im_id, message, params.symbolize_keys)
+    platform = Redmine2chat.platform(platform_name)
+
+    if platform.nil?
+      raise "redmine_2chat: chat platform #{platform_name.inspect} is not registered in this process " \
+            "(registered: #{Redmine2chat.platforms.keys.inspect}); restart the worker"
+    end
+
+    platform.send_message(im_id, message, params.symbolize_keys)
   end
 end

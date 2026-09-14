@@ -1,19 +1,13 @@
 module Redmine2chat::Platforms
-  class Telegram
-    include Dry::Monads::Result::Mixin
-
+  class Telegram < Base
     class ChatUpgradedError
       def self.===(e)
         e.is_a?(::Telegram::Bot::Exceptions::ResponseError) && e.message.include?('group chat was upgraded to a supergroup chat')
       end
     end
 
-    def icon_path
-      'plugin_assets/redmine_2chat/telegram-icon.png'
-    end
-
-    def inactive_icon_path
-      'plugin_assets/redmine_2chat/telegram-inactive-icon.png'
+    def available?
+      RedmineBots::Telegram.bot_token.present?
     end
 
     def create_chat(title, issue)

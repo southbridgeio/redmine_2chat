@@ -4,13 +4,20 @@ class IssueChat < ApplicationRecord
   has_many :messages, class_name: 'ChatMessage'
 
   scope :active, -> { where(active: true) }
+  scope :on_platform, ->(platform_name) { where(platform_name: platform_name.to_s) }
 
-  def close
-    platform.close_chat(self)
+  validates :platform_name, presence: true
+
+  def close(message = nil)
+    platform.close_chat(im_id, message.presence || I18n.t('redmine_2chat.messages.closed_automatically'))
   end
 
   def platform
-    Redmine2chat.platforms[platform_name]
+    Redmine2chat.platform(platform_name)
+  end
+
+  def platform_title
+    platform&.title || platform_name.to_s.titleize
   end
 
   def inactive?

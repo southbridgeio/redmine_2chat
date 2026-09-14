@@ -23,6 +23,7 @@ register_after_redmine_initialize_proc.call do
 
   Redmine2chat.register_platform('slack', Redmine2chat::Platforms::Slack.new)
   Redmine2chat.register_platform('telegram', Redmine2chat::Platforms::Telegram.new)
+  Redmine2chat.register_platform('yandex', Redmine2chat::Platforms::Yandex.new)
 
   RedmineBots::Slack::Bot.register_handlers Redmine2chat::Platforms::Slack::MessageHandler
 
@@ -61,7 +62,7 @@ Redmine::Plugin.register :redmine_2chat do
   name 'Redmine 2Chat'
   url 'https://github.com/southbridgeio/redmine_2chat'
   description 'This is a plugin for Redmine which adds group chats to Redmine issues on different chat platforms such as Slack and Telegram.'
-  version '0.5.0'
+  version '0.6.0'
   author 'Southbridge'
   author_url 'https://github.com/southbridgeio'
 
@@ -70,7 +71,7 @@ Redmine::Plugin.register :redmine_2chat do
   settings(default: {
              'daily_report' => '1',
              'kick_locked' => '1',
-             'active_platform' => 'telegram'
+             'active_platforms' => ['telegram']
            },
            partial: 'settings/redmine_2chat')
 

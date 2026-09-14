@@ -97,11 +97,11 @@ module Redmine2chat::Telegram
           reply_markup: RedmineBots::Telegram.bot.default_keyboard.to_json
         )
 
-        CreateChat.(issue)
+        CreateChat.(issue, 'telegram')
 
         issue.reload
         message_text = I18n.t('redmine_2chat.journal.chat_was_created',
-                              chat_url: issue.active_chat.shared_url)
+                              chat_url: issue.active_chat_for('telegram')&.shared_url)
 
         send_message(message_text)
       end

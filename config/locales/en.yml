@@ -140,11 +140,36 @@ en:
     tab_title: Chat Telegram
     archive_title: Chat archive
     settings:
+      active_platforms: Active platforms
+      active_platforms_hint: Every selected platform gets its own chat link on the issue page. Hold Ctrl to select several.
+      platform_not_configured: "Platforms are enabled but not configured: %{platforms}. Check the Redmine Bots plugin settings."
       daily_report: Post a comment with chat summary once a day
       close_issue_statuses: Close chat for issues with statuses
       close_issue_statuses_hint: By default chat will be closed for closed issues
       required: "required for this plugin"
       kick_locked: Kick locked users from chats (performs daily)
+    errors:
+      unknown_platform: "Unknown chat platform: %{platform}"
+      platform_disabled: "Platform %{platform} is disabled in the plugin settings"
+      no_active_chat: No active chat found
+      closed_locally: "Could not close the chat in %{platform}. It is marked closed in Redmine only - check it in the messenger."
+    yandex:
+      problems:
+        not_linked: no Yandex 360 account is linked - send /connect to the bot
+        not_in_org: "login \"%{login}\" is unknown to the organization - the person has to be added as a guest in the Yandex 360 admin panel"
+        not_a_user: this is a group, not a Redmine user
+        inactive: the user is locked or anonymous
+      report:
+        not_added: "Could not add to the chat:"
+      title: Yandex Messenger
+      errors:
+        not_configured: Yandex Messenger bot OAuth token is not set (Redmine Bots plugin settings)
+        no_login: Set your "Yandex 360 login" on the My account page, or link the account by sending "/connect" to the bot - the bot cannot create a chat without it.
+        creator_not_linked: Set your "Yandex 360 login" on the My account page, or link the account by sending "/connect" to the bot - the bot cannot create a chat without it.
+        creator_not_in_org: "Your login \"%{login}\" is unknown to the Yandex 360 organization. Check it in your profile, or link the account by sending \"/connect\" to the bot."
+        creator_not_a_user: Only a Redmine user can create a chat.
+        creator_inactive: This account is locked - it cannot create a chat.
+        api: "Yandex Messenger: %{message}"
     messages:
       hello: "Hello, everybody! This is a chat for issue: %{issue_url}"
       closed_from_issue: chat was closed from issue
@@ -164,6 +189,7 @@ en:
     journal:
       chat_was_created: "Chat was created. Join it here: %{chat_url}"
       chat_was_closed: Chat was closed
+      chat_was_closed_locally: "Chat closed in Redmine only: %{platform} did not confirm the closing after %{count} attempts. Last error: %{error}"
       from_telegram: from Telegram
       daily_report: "For %{date} there were %{users_count} chatters: %{users}. %{messages_count} messages."
     link:

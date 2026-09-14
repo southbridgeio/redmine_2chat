@@ -57,7 +57,7 @@ module Redmine2chat::Telegram
         issue_id = command.text.gsub('/issue', '').gsub('/task', '').match(/#?(\d+)/).try(:[], 1)
         issue = Issue.find_by_id(issue_id)
         if issue.present?
-          EDITABLES << 'subject_chat' if issue.active_chat.present?
+          EDITABLES << 'subject_chat' if issue.active_chat_for('telegram').present?
           executing_command.update(step_number: 4, data: executing_command.data.merge(issue_id: issue.id))
           send_message(locale('select_param', true), reply_markup: make_keyboard(EDITABLES))
         else
@@ -199,17 +199,19 @@ module Redmine2chat::Telegram
       end
 
       def change_issue_chat_name(name)
-        if issue.active_chat.present? && issue.active_chat.im_id.present?
+        telegram_chat = issue.active_chat_for('telegram')
+
+        if telegram_chat.present? && telegram_chat.im_id.present?
           if name.present?
             if account.user.allowed_to?(:edit_issues, issue.project)
-              RedmineBots::Telegram::Tdlib::RenameChat.(issue.active_chat.im_id, name)
+              RedmineBots::Telegram::Tdlib::RenameChat.(telegram_chat.im_id, name)
               executing_command.destroy
               send_message(locale('chat_name_changed'))
             else
               send_message(I18n.t('redmine_2chat.bot.access_denied'))
             end
           else
-            chat_info = get_chat.(issue.active_chat.im_id)
+            chat_info = get_chat.(telegram_chat.im_id)
             send_message(chat_info['title'].to_s)
           end
         else

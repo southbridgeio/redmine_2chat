@@ -32,13 +32,9 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'closes groups only for issues with required statuses' do
-      IssueChat.create(need_to_close_at: 1.day.ago,
-                       last_notification_at: 2.days.ago,
-                       im_id: 789,
-                       platform_name: 'telegram',
-                       issue_id: 1)
+      @telegram_group.update(need_to_close_at: 1.day.ago)
 
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue, String])
 
       Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
         IssueChatAutoCloseWorker.new.perform
@@ -47,11 +43,29 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
       mock_worker.verify
     end
 
+    it 'closes every platform of the issue separately' do
+      @telegram_group.update(need_to_close_at: 1.day.ago)
+      yandex_group = IssueChat.create(need_to_close_at: 1.day.ago,
+                                      last_notification_at: 2.days.ago,
+                                      im_id: '0/0/abc',
+                                      platform_name: 'yandex',
+                                      issue_id: 1)
+
+      closed = []
+
+      Redmine2chat::Operations::CloseChat.stub :call, ->(issue, platform) { closed << [issue.id, platform] } do
+        IssueChatAutoCloseWorker.new.perform
+      end
+
+      assert_equal [[1, 'telegram'], [1, 'yandex']], closed.sort
+      assert yandex_group.persisted?
+    end
+
     it 'notify only for issues with required statuses' do
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue, String])
 
       Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
-        IssueChatCloseNotificationWorker.expects(:perform_async).with(1)
+        IssueChatCloseNotificationWorker.expects(:perform_async).with(1, @telegram_group.id)
         IssueChatAutoCloseWorker.new.perform
       end
     end
@@ -63,13 +77,9 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'close groups only for issues with required statuses' do
-      IssueChat.create(need_to_close_at: 1.day.ago,
-                       last_notification_at: 2.days.ago,
-                       im_id: 890,
-                       platform_name: 'telegram',
-                       issue_id: 2)
+      @another_telegram_group.update(need_to_close_at: 1.day.ago)
 
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue, String])
 
       Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
         IssueChatAutoCloseWorker.new.perform
@@ -79,10 +89,10 @@ class IssueChatAutoCloseWorkerTest < ActiveSupport::TestCase
     end
 
     it 'notify only for issues with required statuses' do
-      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue])
+      mock_worker = Minitest::Mock.new.expect(:call, nil, [Issue, String])
 
       Redmine2chat::Operations::CloseChat.stub :call, mock_worker do
-        IssueChatCloseNotificationWorker.expects(:perform_async).with(2)
+        IssueChatCloseNotificationWorker.expects(:perform_async).with(2, @another_telegram_group.id)
         IssueChatAutoCloseWorker.new.perform
       end
     end

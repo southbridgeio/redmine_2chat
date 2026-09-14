@@ -1,7 +1,5 @@
 module Redmine2chat::Platforms
-  class Slack
-    include Dry::Monads::Result::Mixin
-
+  class Slack < Base
     def create_chat(title, issue)
       channel = robot_client.channels_create(name: title).channel
       team = robot_client.team_info.team
@@ -23,12 +21,8 @@ module Redmine2chat::Platforms
       robot_client.chat_postMessage(channel: im_id, text: message)
     end
 
-    def icon_path
-      'plugin_assets/redmine_2chat/slack-icon.png'
-    end
-
-    def inactive_icon_path
-      'plugin_assets/redmine_2chat/slack-inactive-icon.png'
+    def available?
+      Setting.plugin_redmine_bots['slack_oauth_token'].present?
     end
 
     private

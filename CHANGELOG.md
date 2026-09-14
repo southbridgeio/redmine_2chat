@@ -1,3 +1,16 @@
+# 0.6.0
+
+* Add Yandex Messenger platform (chat creation from an issue, closing, notifications)
+* Require a linked Yandex 360 account before a Yandex chat can be created
+* Log every Yandex Messenger event of the plugin to log/redmine_2chat/yandex.log
+* Give up closing a chat after repeated failures instead of retrying every hour forever
+* Fix notes being silently dropped when two operations journal on the same issue object
+* Support several active platforms at once: an issue now holds one chat per platform
+* Replace the `active_platform` setting with `active_platforms` (the old value is still honoured)
+* Add `Redmine2chat::Platforms::Base` as the explicit platform contract
+* Add a unique index guaranteeing one active chat per issue per platform
+* Bump plugin version to 0.6.0
+
 # 0.5.0
 
 * Add compatibility with Redmine 6.1
