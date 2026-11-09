@@ -81,9 +81,10 @@ en:
         user_not_found: "There is no users for selected project. Command is canceled."
         without_user: "Without user"
         input_subject: "Input issue subject."
+        invalid_subject: "Subject must be text no longer than %{max} characters. Input subject again or /cancel."
         input_text: "Input issue text."
         success: "Issue is created:"
-        error: "Failed to create issue."
+        error: "Failed to create issue. Command is canceled."
         projects_not_found: "There is no projects you can access."
         create_chat_question: Create a chat?
         yes_answer: "Yes"
