@@ -4,6 +4,7 @@ module Redmine2chat::Telegram
       include Redmine2chat::Operations
       
       PROJECTS_PER_PAGE = 10
+      SUBJECT_MAX_LENGTH = 255
 
       def execute
         return unless account.present?
@@ -50,9 +51,14 @@ module Redmine2chat::Telegram
       end
 
       def execute_step_4
+        subject = command.text.to_s.strip
+        unless subject.length.between?(1, SUBJECT_MAX_LENGTH)
+          return send_message(I18n.t('redmine_2chat.bot.new_issue.invalid_subject', max: SUBJECT_MAX_LENGTH))
+        end
+
         executing_command.update(
           step_number: 5,
-          data: executing_command.data.merge(subject: command.text))
+          data: executing_command.data.merge(subject: subject))
 
         send_message(I18n.t('redmine_2chat.bot.new_issue.input_text'))
       end
@@ -75,8 +81,11 @@ module Redmine2chat::Telegram
 
         send_message(message_text,
                      reply_markup: keyboard)
-      rescue StandardError
-        send_message(I18n.t('redmine_2chat.bot.new_issue.error'))
+      rescue StandardError => e
+        logger.error("NewIssueCommand ##{executing_command.id} failed: #{e.class}: #{e.message}")
+        executing_command.destroy
+        send_message(I18n.t('redmine_2chat.bot.new_issue.error'),
+                     reply_markup: RedmineBots::Telegram.bot.default_keyboard.to_json)
       end
 
       def execute_step_6
